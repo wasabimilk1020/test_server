@@ -170,5 +170,5 @@ class TabTreeview(QWidget):
       tab_container.addTab(tab, tab_name)
       self.tab_contents[tab_name] = tab
   
-  def schedule_set_fct(self):
-      print("스케줄 설정 버튼 클릭됨")
+  # def schedule_set_fct(self): #이게 왜 여기 있는거야??
+  #     print("스케줄 설정 버튼 클릭됨")
