@@ -68,43 +68,6 @@ class Tab(QWidget):
           self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png", "test_gif.gif")  
           
         self.setLayout(self.tab_layout)
-        
-    def setup_initial_data(self, pcList, sio):
-      self.pcList=pcList
-      self.sio=sio
-      self.tabTreeview_btn_img.setup_data(pcList,sio)  #버튼 클래스 초기화
-    
-    def setup_character_list(self, character_list):
-      self.character_list=character_list
-      self.tabTreeview_btn_img.setup_character_list(character_list)  #버튼 클래스 초기화
-
-    def populate_data(self):
-      name_list=self.character_list.keys()  #{"아이디":핸들 값}
-      
-      if name_list==[]:  # 빈 딕셔너리일 경우
-        print("name_list가 비어 있음")
-      else:
-        # 첫 번째 열 첫 번째 행에 전체 체크박스 추가
-        header_item = QTreeWidgetItem([""])
-        header_item.setFlags(header_item.flags() | Qt.ItemIsUserCheckable)
-        header_item.setCheckState(0, Qt.Checked)
-        self.tree_widget.addTopLevelItem(header_item)
-
-        # 데이터 추가
-        for name in name_list:
-          self.rowId[name] = QTreeWidgetItem(["", name])
-          self.rowId[name].setFlags(self.rowId[name].flags() | Qt.ItemIsUserCheckable)
-          self.rowId[name].setCheckState(0, Qt.Checked)
-          self.tree_widget.addTopLevelItem(self.rowId[name])
-          
-          #컬럼 테스트용 데이터
-          self.rowId[name].setText(2,"아이템")
-          self.rowId[name].setText(3,"무야호")
-          self.rowId[name].setText(4,"220")
-          
-
-        # 합계 업데이트
-        self.update_sum()
 
     def on_check_allOrnot(self, item, column):
       if column == 0:  # 체크박스 열만 처리
@@ -127,42 +90,24 @@ class Tab(QWidget):
         except ValueError:
           pass  # 숫자가 아니면 무시
       self.sum_label.setText(f"다이아 합계: {total}")
-    
-    def addLog(self, log, id, time, flag):
-      #플래그가 0이면 에러 1이면 상태 메세지로 처리하자
-      if flag==0:
-        if(id in self.rowId):  
-          self.rowId[id].setText(3,"O")
-          self.rowId[id].setTextAlignment(2,Qt.AlignHCenter)
-          self.rowId[id].addChild(QTreeWidgetItem(self.rowId[id],["","",time,log]))  
-          # 특정 탭 이름만 빨간색으로 변경
-          tab_index = self.tab_container.indexOf(self)  # 현재 탭의 인덱스 가져오기
-          if tab_index != -1:  # 유효한 인덱스라면
-              self.tab_container.tabBar().setTabTextColor(tab_index, QColor("red"))
-          self.tabTreeview_btn_img.complete_task(self.tabTreeview_btn_img.last_clicked_button.pop(0))
-        else:
-          print("없는 아이디")
-      elif flag==1:
-        if(id in self.rowId):  
-          self.rowId[id].setText(2,time)
-          self.rowId[id].setText(3,log)
-          self.rowId[id].setTextAlignment(2,Qt.AlignHCenter)
-          self.tabTreeview_btn_img.complete_task(self.tabTreeview_btn_img.last_clicked_button.pop(0))
-        else:
-          print("없는 아이디")
-        
-        
+  
 class TabTreeview(QWidget):
   def __init__(self):
     super().__init__()
     self.tab_container = QTabWidget()
     self.tab_layout = QVBoxLayout()
+    self.pcList = None
+    self.sio = None
     # --- 탭 추가 ---
     self.tab_contents = {}  # 탭 객체 딕트 {"PC01":탭 객체}
     self.add_tabs(self.tab_container)
     self.tab_layout.addWidget(self.tab_container)
     self.setLayout(self.tab_layout)
-      
+
+  def setup_character_list(self, character_list, PC_id):
+    self.character_list=character_list
+    self.tab_contents[PC_id].tabTreeview_btn_img.setup_character_list(character_list)  #버튼 클래스 초기화
+
   def add_tabs(self, tab_container):
     for i in range(1, 11):
       tab_name = f"PC{i:02d}"
@@ -170,5 +115,56 @@ class TabTreeview(QWidget):
       tab_container.addTab(tab, tab_name)
       self.tab_contents[tab_name] = tab
   
-  # def schedule_set_fct(self): #이게 왜 여기 있는거야??
-  #     print("스케줄 설정 버튼 클릭됨")
+  def addLog(self, log, id, time, flag, PC_id):
+    #플래그가 0이면 에러 1이면 상태 메세지로 처리하자
+    if flag==0:
+      if(id in self.tab_contents[PC_id].rowId):  
+        self.tab_contents[PC_id].rowId[id].setText(3,"O")
+        self.tab_contents[PC_id].rowId[id].setTextAlignment(2,Qt.AlignHCenter)
+        self.tab_contents[PC_id].rowId[id].addChild(QTreeWidgetItem(self.tab_contents[PC_id].rowId[id],["","",time,log]))  
+        # 특정 탭 이름만 빨간색으로 변경
+        tab_index = self.tab_container.indexOf(self)  # 현재 탭의 인덱스 가져오기
+        if tab_index != -1:  # 유효한 인덱스라면
+            self.tab_container.tabBar().setTabTextColor(tab_index, QColor("red"))
+        self.tab_contents[PC_id].tabTreeview_btn_img.complete_task(self.tab_contents[PC_id].tabTreeview_btn_img.last_clicked_button.pop(0))
+      else:
+        print("없는 아이디")
+    elif flag==1:
+      if(id in self.rowId):  
+        self.tab_contents[PC_id].rowId[id].setText(2,time)
+        self.tab_contents[PC_id].rowId[id].setText(3,log)
+        self.tab_contents[PC_id].rowId[id].setTextAlignment(2,Qt.AlignHCenter)
+        self.tab_contents[PC_id].tabTreeview_btn_img.complete_task(self.tab_contents[PC_id].tabTreeview_btn_img.last_clicked_button.pop(0))
+      else:
+        print("없는 아이디")
+  
+  def tree_clear(self, PC_id):
+    self.tab_contents[PC_id].tree_widget.clear()
+
+  def populate_data(self, PC_id):
+    name_list=self.character_list.keys()  #{"아이디":핸들 값}
+    
+    if name_list==[]:  # 빈 딕셔너리일 경우
+      print("name_list가 비어 있음")
+    else:
+      # 첫 번째 열 첫 번째 행에 전체 체크박스 추가
+      header_item = QTreeWidgetItem([""])
+      header_item.setFlags(header_item.flags() | Qt.ItemIsUserCheckable)
+      header_item.setCheckState(0, Qt.Checked)
+      self.tab_contents[PC_id].tree_widget.addTopLevelItem(header_item)
+      # 데이터 추가
+      for name in name_list:
+        self.tab_contents[PC_id].rowId[name] = QTreeWidgetItem(["", name])
+        self.tab_contents[PC_id].rowId[name].setFlags(self.tab_contents[PC_id].rowId[name].flags() | Qt.ItemIsUserCheckable)
+        self.tab_contents[PC_id].rowId[name].setCheckState(0, Qt.Checked)
+        self.tab_contents[PC_id].tree_widget.addTopLevelItem(self.tab_contents[PC_id].rowId[name])
+        
+        #컬럼 테스트용 데이터
+        self.tab_contents[PC_id].rowId[name].setText(2,"아이템")
+        self.tab_contents[PC_id].rowId[name].setText(3,"무야호")
+        self.tab_contents[PC_id].rowId[name].setText(4,"220")
+        
+      # 합계 업데이트
+      self.tab_contents[PC_id].update_sum()
+    
+

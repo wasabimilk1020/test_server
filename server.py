@@ -10,7 +10,7 @@ from gui_main import MainWindow
 import json
 
 class SignalGenerator(QObject):
-  user_signal = pyqtSignal(object, object, object,object)
+  user_signal = pyqtSignal(object, object, object, object, object)
   
 class WebSocketServer:
   def __init__(self, host='127.0.0.1', port=4000, window=None):
@@ -25,6 +25,9 @@ class WebSocketServer:
     self.greenlet=None  #greenlet 저장용
     self.window=window
     self.signal_generator = SignalGenerator()  # SignalGenerator를 속성으로 생성
+    self.signal_generator.user_signal.connect(window.tab_tree_view.tree_clear) 
+    self.signal_generator.user_signal.connect(window.tab_tree_view.populate_data)
+    self.signal_generator.user_signal.connect(window.tab_tree_view.addLog)
 
     # 이벤트 핸들러 등록
     self.sio.on('connect', self.connect)
@@ -38,7 +41,9 @@ class WebSocketServer:
     query_params = parse_qs(query_string)
     computer_id = query_params["computer_id"][0]  # "PC01"
     self.pcList[computer_id] = sid  #클라이언트 리스트 생성
-    window.tab_tree_view.tab_contents[computer_id].setup_initial_data(self.pcList, self.sio)  #탭 클래스 setup
+    window.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.setup_data(self.pcList, self.sio)  #버튼 클래스 pcList setup
+   
+
     print(f"connect{computer_id} 클라이언트", sid)
 
   def disconnect(self, sid):
@@ -58,22 +63,19 @@ class WebSocketServer:
   def revAccount(self, sid, data):
     character_list=data  #{"아이디":핸들 값}
     computer_id=self.get_computer_id(sid)
- 
+    print("revAccount 호출")
     #json으로 character_list를 만들어 놓는 이 부분이 필요 한가??
     try:
       with open(f"./json_files/character_list/{computer_id}.json", "w", encoding="utf-8") as json_file:
         json.dump(character_list, json_file, ensure_ascii=False)
     except Exception as e:
       print(f"Error saving JSON file for {computer_id}: {e}")  
-  
-    window.tab_tree_view.tab_contents[computer_id].setup_character_list(character_list)  #탭 클래스 character_list 세팅
-    self.signal_generator.user_signal.connect(window.tab_tree_view.tab_contents[computer_id].tree_widget.clear)
-    self.signal_generator.user_signal.connect(window.tab_tree_view.tab_contents[computer_id].populate_data)
-    self.signal_generator.user_signal.emit(None,None,None,None)
-    self.signal_generator.user_signal.disconnect()
+
+    window.tab_tree_view.setup_character_list(character_list, computer_id)  #탭 클래스 character_list 세팅
+    self.signal_generator.user_signal.emit(computer_id,None,None,None,None)
     
   def logEvent(self, sid, data):
-    #[log_message, id]
+    #[log_message, id, flag]
     log_message=data[0]
     character_name=data[1]
     flag=data[2]
@@ -82,9 +84,7 @@ class WebSocketServer:
     #현재 시간
     now = datetime.datetime.now()
     nowDatetime=now.strftime('%Y-%m-%d %H:%M')
-    self.signal_generator.user_signal.connect(window.tab_tree_view.tab_contents[computer_id].addLog)
-    self.signal_generator.user_signal.emit(log_message,character_name, nowDatetime, flag)
-    self.signal_generator.user_signal.disconnect()
+    self.signal_generator.user_signal.emit(log_message,character_name, nowDatetime, flag, computer_id)
           
   def cleanup(self):
     with self.cleanup_lock:  # Lock으로 보호 (메인스레드와 그린렛이 동시 접근)
