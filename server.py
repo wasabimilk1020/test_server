@@ -34,12 +34,12 @@ class WebSocketServer:
     self.sio.on("logEvent", self.logEvent)
   
   def connect(self, sid, environ):
-    print("connect 클라이언트", sid)
     query_string = environ.get("QUERY_STRING")
     query_params = parse_qs(query_string)
     computer_id = query_params["computer_id"][0]  # "PC01"
     self.pcList[computer_id] = sid  #클라이언트 리스트 생성
     window.tab_tree_view.tab_contents[computer_id].setup_initial_data(self.pcList, self.sio)  #탭 클래스 setup
+    print(f"connect{computer_id} 클라이언트", sid)
 
   def disconnect(self, sid):
     print("클라이언트 연결 끊김")
@@ -58,7 +58,7 @@ class WebSocketServer:
   def revAccount(self, sid, data):
     character_list=data  #{"아이디":핸들 값}
     computer_id=self.get_computer_id(sid)
-    
+ 
     #json으로 character_list를 만들어 놓는 이 부분이 필요 한가??
     try:
       with open(f"./json_files/character_list/{computer_id}.json", "w", encoding="utf-8") as json_file:
