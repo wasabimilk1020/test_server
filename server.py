@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
   sys.exit(app.exec_())
 
-#버튼 클라쪽 로직 좀 만들어주고 아래 사항 되는지 안되는지 확인 후 하자
+#send_to_commit 으로 아래 스케쥴 만들어줘야 한다.
 
 #스케쥴 테이블 설정 좀 하자
 #1. 23시 55분에 초기화 되고 재설정되게 하자. 마지막 스케쥴(현재는 격섬)이 시작되면 window.schedule_table.schedule_set_fct()게 호출되게 하자

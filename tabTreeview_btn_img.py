@@ -230,10 +230,17 @@ class TabTreeview_btn(QWidget):
     return emit_data
 
   #왼쪽 버튼 클릭 시 이벤트 핸들러  
-  def send_to_command(self):
-    clicked_button=self.sender()
-    button_name=clicked_button.text()
-    print("센드커맨드호출")
+  def send_to_command(self, button=None, title=None):
+    clk_btn=self.sender()
+    btn_name=clk_btn.text()
+
+    if btn_name == "스케줄 설정":
+      clicked_button=button
+      button_name=title
+    else:
+      clicked_button=clk_btn
+      button_name=btn_name
+      
     data_list=[]
     selected_characters={}
     character_list=[]
