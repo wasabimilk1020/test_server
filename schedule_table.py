@@ -58,5 +58,9 @@ class ScheduleTable(QWidget):
       self.emit_schedule_time[f"table_{idx}"]=time_list
       time_list=[]  #리스트 초기화
     print(self.emit_schedule_time)
+#시간이 되면 contextmenu가 실행되야 한다.
 
-  
+#   schedule.every().day.at(setTimePostbox[1]).do(schedulePostBox,1).tag('routine')  #오전 우편
+# schedule.every().day.at(setTimePostbox[2]).do(schedulePostBox,2).tag('routine')  #오후 우편
+# schedule.every().day.at(setTimePostbox[3]).do(schedulePostBox,3).tag('routine')  #저녁 우편
+# schedule.every().day.at(setTimePostbox[4]).do(schedulePostBox,4).tag('routine')  #밤 우편

@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QTabWidget,QTabBar,QHeaderView
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QTabWidget,QTabBar,QHeaderView,QMenu
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from tabTreeview_btn_img import TabTreeview_btn
@@ -15,7 +15,7 @@ def load_json(json_file, PC_id):
   
 # 탭 클래스
 class Tab(QWidget):
-    def __init__(self,tab_name, tab_container, tab_contents):
+    def __init__(self,tab_name, tab_container, tab_contents,show_context_menu):
         super().__init__()
         self.tab_name = tab_name  # 탭 이름 설정
         self.tab_container = tab_container
@@ -25,6 +25,7 @@ class Tab(QWidget):
         self.rowId={} #{"아이디":rowId}
         self.character_list={}
         self.tab_contents=tab_contents
+        self.show_context_menu=show_context_menu
 
         # 레이아웃 설정
         self.tab_layout = QHBoxLayout()
@@ -52,7 +53,7 @@ class Tab(QWidget):
         self.left_tab_layout.addWidget(self.sum_label)
 
         # 버튼 및 이미지 레이아웃
-        self.tabTreeview_btn_img = TabTreeview_btn(self.tab_name,self.rowId, self.tab_container, self.tab_contents)
+        self.tabTreeview_btn_img = TabTreeview_btn(self.tab_name,self.rowId, self.tab_container, self.tab_contents, self.show_context_menu)
         self.json_editor = JsonEditor(self.tab_name, self.tab_container, self.tabTreeview_btn_img)
 
         self.left_tab_layout.addWidget(self.tabTreeview_btn_img)
@@ -98,6 +99,7 @@ class TabTreeview(QWidget):
     self.tab_layout = QVBoxLayout()
     self.pcList = None
     self.sio = None
+    self.pcList = None
     # --- 탭 추가 ---
     self.tab_contents = {}  # 탭 객체 딕트 {"PC01":탭 객체}
     self.add_tabs(self.tab_container)
@@ -112,7 +114,7 @@ class TabTreeview(QWidget):
   def add_tabs(self, tab_container):
     for i in range(1, 11):
       tab_name = f"PC{i:02d}"
-      tab = Tab(tab_name, self.tab_container, self.tab_contents)
+      tab = Tab(tab_name, tab_container, self.tab_contents, self.show_context_menu)
       tab_container.addTab(tab, tab_name)
       self.tab_contents[tab_name] = tab
   
@@ -124,14 +126,15 @@ class TabTreeview(QWidget):
         self.tab_contents[PC_id].rowId[id].setTextAlignment(2,Qt.AlignHCenter)
         self.tab_contents[PC_id].rowId[id].addChild(QTreeWidgetItem(self.tab_contents[PC_id].rowId[id],["","",time,log]))  
         # 특정 탭 이름만 빨간색으로 변경
-        tab_index = self.tab_container.indexOf(self)  # 현재 탭의 인덱스 가져오기
+        tab_index = self.tab_container.indexOf(self.tab_contents[PC_id])  # 현재 탭의 인덱스 가져오기
+        print("tab_index",tab_index)
         if tab_index != -1:  # 유효한 인덱스라면
-            self.tab_container.tabBar().setTabTextColor(tab_index, QColor("red"))
+          self.tab_container.tabBar().setTabTextColor(tab_index, QColor("red"))
         self.tab_contents[PC_id].tabTreeview_btn_img.complete_task(self.tab_contents[PC_id].tabTreeview_btn_img.last_clicked_button.pop(0))
       else:
         print("없는 아이디")
     elif flag==1:
-      if(id in self.rowId):  
+      if(id in self.tab_contents[PC_id].rowId):  
         self.tab_contents[PC_id].rowId[id].setText(2,time)
         self.tab_contents[PC_id].rowId[id].setText(3,log)
         self.tab_contents[PC_id].rowId[id].setTextAlignment(2,Qt.AlignHCenter)
@@ -174,5 +177,29 @@ class TabTreeview(QWidget):
       self.tab_contents[PC_id].tabTreeview_btn_img.client_status.setStyleSheet("color: green;")
     else:
       self.tab_contents[PC_id].tabTreeview_btn_img.client_status.setStyleSheet("color: red;")
+  
+  #---컨텍스트 메뉴 (버튼 오른쪽 클릭 메뉴 및 동작)
+  def show_context_menu(self, position):
+    clicked_button = self.sender()  # 이벤트를 보낸 버튼
+    button_name=clicked_button.text()
     
+    if not clicked_button:  # 버튼이 없으면 종료 (버튼이 없을 일이 있나? 뭐지 이거)
+      return
+    
+    # QMenu 생성
+    menu = QMenu(self)
+    # 메뉴 항목 추가
+    action1 = menu.addAction(f"{button_name} 실행")
+
+    # 클릭된 버튼의 위치를 전역 좌표로 변환
+    global_position = clicked_button.mapToGlobal(position)  #오른쪽 클릭 했을 때 메뉴가 나오는 마우스 좌표
+
+    # 메뉴 실행
+    action = menu.exec_(global_position)
+
+    # 선택된 항목 확인
+    if action == action1:
+      for computer_id in self.tab_contents.keys():
+        self.tab_contents[computer_id].tabTreeview_btn_img.send_to_command()   
+        # self.start_animation(clicked_button)  # 애니메이션 추가
 

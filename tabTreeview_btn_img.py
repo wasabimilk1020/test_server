@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout,QHBoxLayout, QPushButton, QLabel,QMainWindow,QGroupBox,QLineEdit,QGridLayout,QSpinBox,QSizePolicy,QMenu, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout,QHBoxLayout, QPushButton, QLabel,QMainWindow,QGroupBox,QLineEdit,QGridLayout,QSpinBox,QSizePolicy, QMessageBox
 from PyQt5.QtGui import QPixmap,QMovie,QColor,QStandardItemModel
 import sys,json
 from PyQt5.QtCore import Qt,QVariantAnimation, QTimer
@@ -51,7 +51,7 @@ def load_json(json_file,tab_name):
   
 #---이 파일의 메인 클래스
 class TabTreeview_btn(QWidget):
-  def __init__(self,tab_name,rowId, tab_widget, tab_contents):
+  def __init__(self,tab_name,rowId, tab_widget, tab_contents, show_context_menu):
     super().__init__()
     self.tab_name=tab_name
     self.sio=None
@@ -60,6 +60,7 @@ class TabTreeview_btn(QWidget):
     self.rowId=rowId
     self.tab_widget=tab_widget
     self.tab_contents=tab_contents
+    self.show_context_menu=show_context_menu
     self.last_clicked_button=[]
     self.character_list=load_json(f"./json_files/character_list/{tab_name}.json", tab_name)
     
@@ -136,13 +137,6 @@ class TabTreeview_btn(QWidget):
   def setup_data(self, pcList, sio):
     self.pcList=pcList
     self.sio=sio
-  
-  # def setup_character_list(self, character_list):
-  #   self.character_list=character_list
-    
-  # def load_buttons(self,file_path):
-  #   with open(file_path, 'r', encoding='utf-8') as f:
-  #     return json.load(f) 
   
   def create_button(self, grid_layout, button_list, buttons):
     #buttons=[{버튼속성},{버튼속성}]
@@ -234,43 +228,12 @@ class TabTreeview_btn(QWidget):
     emit_data["character_list"]=selected_characters
     
     return emit_data
-  
-#---컨텍스트 메뉴 (버튼 오른쪽 클릭 메뉴 및 동작)
-  def show_context_menu(self, position):
-    clicked_button = self.sender()  # 이벤트를 보낸 버튼
-    button_name=clicked_button.text()
-    selected_characters={}
-    
-    if not clicked_button:  # 버튼이 없으면 종료 (버튼이 없을 일이 있나? 뭐지 이거)
-      return
-    
-    # 그룹 이름과 관련된 버튼 데이터를 매핑
-    button_dict_map = {
-      "던전": self.dungeon_buttons,
-      "루틴": self.routine_buttons,
-      "세팅": self.setting_buttons,
-    }
-    # QMenu 생성
-    menu = QMenu(self)
-    # 메뉴 항목 추가
-    action1 = menu.addAction(f"{button_name} 실행")
-    
-    emit_data=self.generate_button_data(button_name,button_dict_map,selected_characters,clicked_button)
-
-    # 클릭된 버튼의 위치를 전역 좌표로 변환
-    global_position = clicked_button.mapToGlobal(position)  #오른쪽 클릭 했을 때 메뉴가 나오는 마우스 좌표
-
-    # 메뉴 실행
-    action = menu.exec_(global_position)
-    # 선택된 항목 확인
-    if action == action1:
-      self.sio.emit('button_schedule', emit_data) #to가 없으므로 브로드캐스트
-      self.start_animation(clicked_button)  # 애니메이션 추가
 
   #왼쪽 버튼 클릭 시 이벤트 핸들러  
   def send_to_command(self):
     clicked_button=self.sender()
     button_name=clicked_button.text()
+    print("센드커맨드호출")
     data_list=[]
     selected_characters={}
     character_list=[]

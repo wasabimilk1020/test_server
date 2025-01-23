@@ -5,6 +5,7 @@ from tabTreeview import TabTreeview
 from schedule_table import ScheduleTable
 from send_to_image import ImageAttachApp
 from json_editor import JsonEditor
+from schedule_manager import Scheduler
 
 class MainWindow(QMainWindow):
   def __init__(self):
@@ -12,6 +13,7 @@ class MainWindow(QMainWindow):
     self.setWindowTitle("QTabWidget Example")
     self.setGeometry(1920, 800, 960, 1080)
     self.cleanup=None
+    Scheduler()  #스케쥴러 실행
     
     # --- 메인 left, right 레이아웃 ---
     self.main_top_layout = QVBoxLayout()  # 메인의 왼쪽 레이아웃
