@@ -5,13 +5,13 @@ from tabTreeview_btn_img import TabTreeview_btn
 from json_editor import JsonEditor
 import json
 
-def load_json(json_file):
+def load_json(json_file, PC_id):
   """JSON 파일 로드."""
   try:
       with open(json_file, "r", encoding="utf-8") as f:
           return json.load(f)
   except (FileNotFoundError, json.JSONDecodeError):
-      return {}  # 파일이 없거나 잘못된 JSON이면 빈 데이터 반환
+      print(f"{PC_id} json 파일을 찾을 수 없음")
   
 # 탭 클래스
 class Tab(QWidget):
@@ -104,9 +104,10 @@ class TabTreeview(QWidget):
     self.tab_layout.addWidget(self.tab_container)
     self.setLayout(self.tab_layout)
 
-  def setup_character_list(self, character_list, PC_id):
-    self.character_list=character_list
-    self.tab_contents[PC_id].tabTreeview_btn_img.setup_character_list(character_list)  #버튼 클래스 초기화
+  def setup_character_list(self, PC_id):
+    pass
+    # self.character_list=character_list
+    # self.tab_contents[PC_id].tabTreeview_btn_img.setup_character_list(character_list)  #버튼 클래스 초기화
 
   def add_tabs(self, tab_container):
     for i in range(1, 11):
@@ -142,8 +143,10 @@ class TabTreeview(QWidget):
     self.tab_contents[PC_id].tree_widget.clear()
 
   def populate_data(self, PC_id):
-    name_list=self.character_list.keys()  #{"아이디":핸들 값}
-    
+    # name_list=self.character_list.keys()  #{"아이디":핸들 값}
+    character_list=load_json(f"./json_files/character_list/{PC_id}.json", PC_id)
+    name_list=character_list.keys()
+
     if name_list==[]:  # 빈 딕셔너리일 경우
       print("name_list가 비어 있음")
     else:
@@ -158,13 +161,18 @@ class TabTreeview(QWidget):
         self.tab_contents[PC_id].rowId[name].setFlags(self.tab_contents[PC_id].rowId[name].flags() | Qt.ItemIsUserCheckable)
         self.tab_contents[PC_id].rowId[name].setCheckState(0, Qt.Checked)
         self.tab_contents[PC_id].tree_widget.addTopLevelItem(self.tab_contents[PC_id].rowId[name])
-        
         #컬럼 테스트용 데이터
         self.tab_contents[PC_id].rowId[name].setText(2,"아이템")
         self.tab_contents[PC_id].rowId[name].setText(3,"무야호")
         self.tab_contents[PC_id].rowId[name].setText(4,"220")
-        
       # 합계 업데이트
       self.tab_contents[PC_id].update_sum()
+  
+  def client_status_label(self, status, PC_id):
+    self.tab_contents[PC_id].tabTreeview_btn_img.client_status.setText(status)
+    if status=="Client Status:ON":
+      self.tab_contents[PC_id].tabTreeview_btn_img.client_status.setStyleSheet("color: green;")
+    else:
+      self.tab_contents[PC_id].tabTreeview_btn_img.client_status.setStyleSheet("color: red;")
     
 

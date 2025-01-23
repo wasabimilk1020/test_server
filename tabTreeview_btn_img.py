@@ -41,6 +41,14 @@ class GifViewer(QLabel):
     self.setFixedSize(40, 30)
     super().leaveEvent(event)
 
+def load_json(json_file,tab_name):
+  """JSON 파일 로드."""
+  try:
+      with open(json_file, "r", encoding="utf-8") as f:
+          return json.load(f)
+  except (FileNotFoundError, json.JSONDecodeError):
+    print(f"{tab_name} json 파일을 찾을 수 없음")
+  
 #---이 파일의 메인 클래스
 class TabTreeview_btn(QWidget):
   def __init__(self,tab_name,rowId, tab_widget, tab_contents):
@@ -48,11 +56,12 @@ class TabTreeview_btn(QWidget):
     self.tab_name=tab_name
     self.sio=None
     self.pcList=None
-    self.character_list=None
+    # self.character_list=None
     self.rowId=rowId
     self.tab_widget=tab_widget
     self.tab_contents=tab_contents
     self.last_clicked_button=[]
+    self.character_list=load_json(f"./json_files/character_list/{tab_name}.json", tab_name)
     
     #reset 및 client status 위젯 및 레이아웃 세팅
     self.client_status_layout = QVBoxLayout()
@@ -128,12 +137,12 @@ class TabTreeview_btn(QWidget):
     self.pcList=pcList
     self.sio=sio
   
-  def setup_character_list(self, character_list):
-    self.character_list=character_list
+  # def setup_character_list(self, character_list):
+  #   self.character_list=character_list
     
-  def load_buttons(self,file_path):
-    with open(file_path, 'r', encoding='utf-8') as f:
-      return json.load(f) 
+  # def load_buttons(self,file_path):
+  #   with open(file_path, 'r', encoding='utf-8') as f:
+  #     return json.load(f) 
   
   def create_button(self, grid_layout, button_list, buttons):
     #buttons=[{버튼속성},{버튼속성}]
@@ -185,7 +194,7 @@ class TabTreeview_btn(QWidget):
     
   def add_buttons(self):
     try:
-      self.buttonsFromJson = self.load_buttons(f"./json_files/PC_buttons/{self.tab_name}_btn.json")
+      self.buttonsFromJson = load_json(f"./json_files/PC_buttons/{self.tab_name}_btn.json",self.tab_name)
       
       # defaultButton = self.load_buttons(file_path)  # {"그룹이름":[{버튼속성},{버튼속성}]}
       buttonFromJson=self.buttonsFromJson # {"그룹이름":[{버튼속성},{버튼속성}]}
