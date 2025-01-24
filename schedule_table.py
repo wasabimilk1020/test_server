@@ -9,6 +9,7 @@ class ScheduleTable(QWidget):
     self.tables=[]  #테이블 객체
     self.tab_tree_view=tab_tree_view
     self.schedule_time={}  #{'table_0': ['09:37', '10:43', '14:40', '18:44', '22:19'], 'table_1': ['13:43', '15:37', '16:44', '21:40', '23:44']}
+    self.scheduled_buttons = {}  # 헤더 제목과 버튼 객체 매핑
     # 테이블 헤더 설정
     self.table_titles = [
         ["모닝","오전 우편", "오후 우편", "저녁 우편", "밤 우편"],
@@ -35,32 +36,35 @@ class ScheduleTable(QWidget):
     
   def set_data(self): #데이터를 이 함수를 이용해 세팅해줘야 한다
     pass
-  
-  def set_schedule_with_time(self, header_title):
-    for computer_id in self.tab_tree_view.tab_contents.keys():
-      buttons_dict = {
-          **self.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.dungeon_buttons,
-          **self.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.routine_buttons,
-          **self.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.setting_buttons,
-      }
-      
-      for title in buttons_dict.keys():
-        if title==header_title:
-          button=buttons_dict[title]
-          self.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.send_to_command(button)  
-          break
 
+  def set_schedule_with_button(self, header_title):
+    button = self.scheduled_buttons.get(header_title)
+    if button:
+      for computer_id in self.tab_tree_view.tab_contents.keys():
+        self.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.send_to_command(button)
+        
   # 스케줄 설정 함수
   def setup_schedule(self, schedule_time, table_headers):
     for table_key, times in schedule_time.items():
-      table_index = int(table_key.split('_')[1])  # table_0, table_1 등에서 인덱스 추출
-      headers = table_headers[table_index]  # 해당 테이블의 헤더 가져오기
-    
+      table_index = int(table_key.split('_')[1])
+      headers = table_headers[table_index]
       for idx, scheduled_time in enumerate(times):
+        # header_title = headers[idx]
         header_title = headers[idx].split()[-1]  # 현재 컬럼의 헤더 제목
-        schedule.every().day.at(scheduled_time).do(self.set_schedule_with_time, header_title).tag('routine')
+        # 버튼 객체 미리 찾기
+        for computer_id in self.tab_tree_view.tab_contents.keys():
+          buttons_dict = {
+            **self.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.dungeon_buttons,
+            **self.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.routine_buttons,
+            **self.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.setting_buttons,
+          }
+          button = buttons_dict.get(header_title)
+          if button:
+            self.scheduled_buttons[header_title] = button
+            schedule.every().day.at(scheduled_time).do(self.set_schedule_with_button, header_title).tag('routine')
+            break
     
-    print("등록된 스케쥴: ", schedule.jobs)
+   
 
   def schedule_table_time_set(self): 
     print("스케줄 설정 버튼 클릭됨")

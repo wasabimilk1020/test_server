@@ -38,6 +38,7 @@ class WebSocketServer:
     self.sio.on('ping', self.handle_ping)
     self.sio.on("revAccount", self.revAccount)
     self.sio.on("logEvent", self.logEvent)
+    self.sio.on("stop_animation", self.stop_animation)
   
   def connect(self, sid, environ):
     query_string = environ.get("QUERY_STRING")
@@ -93,7 +94,10 @@ class WebSocketServer:
     now = datetime.datetime.now()
     nowDatetime=now.strftime('%Y-%m-%d %H:%M')
     self.signal_generator.user_signal_log.emit(log_message,character_name, nowDatetime, flag, computer_id)
-          
+
+  def stop_animation(self, sid, data):
+    print("데이터: ",data)
+
   def cleanup(self):
     with self.cleanup_lock:  # Lock으로 보호 (메인스레드와 그린렛이 동시 접근)
       if self.cleanup_done:
@@ -152,12 +156,8 @@ if __name__ == "__main__":
 
   sys.exit(app.exec_())
 
-#send_to_commit 으로 아래 스케쥴 만들어줘야 한다.
-
-#스케쥴 테이블 설정 좀 하자
-#1. 23시 55분에 초기화 되고 재설정되게 하자. 마지막 스케쥴(현재는 격섬)이 시작되면 window.schedule_table.schedule_set_fct()게 호출되게 하자
-#2. 클래에서 진행 중은 빨간색 초록색은 완료로 표시되게 보내줘야 한다.
-#3. 즉, 클라쪽 스케쥴 받는 부분 해주자
+#애니메이션 처리 좀 하자.
+#클라에서 애니메이션 스탑 시그널을 보내면 멈추게 만들자
 
 #run 3번째에는 아이템 분해 즉 1시간30분마다 분해. run도 그렇고 아이템 분해 할떄
 #이미지 서치를 어떤 식으로 할지 생각 좀 해보자.
