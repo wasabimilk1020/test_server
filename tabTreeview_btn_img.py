@@ -61,7 +61,7 @@ class TabTreeview_btn(QWidget):
     self.tab_widget=tab_widget
     self.tab_contents=tab_contents
     self.show_context_menu=show_context_menu
-    self.last_clicked_button=[]
+    self.last_clicked_button={}
     self.character_list=load_json(f"./json_files/character_list/{tab_name}.json", tab_name)
     
     #reset 및 client status 위젯 및 레이아웃 세팅
@@ -171,7 +171,7 @@ class TabTreeview_btn(QWidget):
 
       #버튼 클릭 시 동작
       button.clicked.connect(self.send_to_command)
-      button.clicked.connect(lambda _, b=button: self.start_animation(b))
+      button.clicked.connect(lambda _, btn=button, btn_name=button_name: self.start_animation(btn, btn_name))
       
 
       # GridLayout에 버튼을 다시 배치
@@ -224,7 +224,7 @@ class TabTreeview_btn(QWidget):
       if check_state== Qt.Checked:  #체크 된 아이디만 실행
         handle=self.character_list[name]
         selected_characters[name]=handle
-        self.last_clicked_button.append(button)
+        self.last_clicked_button[button_name]=button
     emit_data["character_list"]=selected_characters
     
     return emit_data
@@ -268,15 +268,17 @@ class TabTreeview_btn(QWidget):
     # 버튼 배경색 업데이트
     button.setStyleSheet(f"background-color: {color.name()};")
 
-  def complete_task(self,button):
-    # 작업 완료 시 애니메이션 중지 및 버튼 복원
-    if button in self.animations:
-        animation = self.animations.pop(button)  # 애니메이션 제거
-        animation.stop()
-    button.setStyleSheet("background-color: none;")
-    button.setEnabled(True)
+  # def complete_task(self,button):
+  #   # 작업 완료 시 애니메이션 중지 및 버튼 복원
+  #   if button in self.animations:
+  #       animation = self.animations.pop(button)  # 애니메이션 제거
+  #       animation.stop()
+  #   button.setStyleSheet("background-color: none;")
+  #   button.setEnabled(True)
 
-  def start_animation(self,button):
+  def start_animation(self,btn, btn_name):
+    button=btn
+    button_name=btn_name
     # 버튼 클릭 비활성화 (중복 클릭 방지)
     button.setEnabled(False)
 
@@ -291,7 +293,7 @@ class TabTreeview_btn(QWidget):
     animation.setLoopCount(-1)  # 무한 반복
     animation.start()
 
-    self.animations[button] = animation # 애니메이션 저장
+    self.animations[button_name] = animation # 애니메이션 저장
 
 #---이미지 섹션
   def image_layout(self, character_name, time, image_path, gif_path):

@@ -13,6 +13,8 @@ class SignalGenerator(QObject):
   user_signal_log = pyqtSignal(object, object, object, object, object)
   user_signal_treeview = pyqtSignal(object)
   user_signal_client_status_label = pyqtSignal(object,object)
+  user_signal_stop_animation = pyqtSignal(object,object)
+
   
 class WebSocketServer:
   def __init__(self, host='127.0.0.1', port=4000, window=None):
@@ -31,6 +33,7 @@ class WebSocketServer:
     self.signal_generator.user_signal_treeview.connect(window.tab_tree_view.populate_data)
     self.signal_generator.user_signal_log.connect(window.tab_tree_view.addLog)
     self.signal_generator.user_signal_client_status_label.connect(window.tab_tree_view.client_status_label)
+    self.signal_generator.user_signal_stop_animation.connect(window.tab_tree_view.stop_animation)
 
     # 이벤트 핸들러 등록
     self.sio.on('connect', self.connect)
@@ -95,8 +98,12 @@ class WebSocketServer:
     nowDatetime=now.strftime('%Y-%m-%d %H:%M')
     self.signal_generator.user_signal_log.emit(log_message,character_name, nowDatetime, flag, computer_id)
 
-  def stop_animation(self, sid, data):
-    print("데이터: ",data)
+  def stop_animation(self, sid, btn_name):
+    button_name=btn_name
+    computer_id=self.get_computer_id(sid)
+    # window.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.complete_task(window.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.last_clicked_button.pop(0))
+    self.signal_generator.user_signal_stop_animation.emit(button_name, computer_id)  #여기서 애니메이션을 중단 시킬 버튼을 전달해야 중단되는대
+    
 
   def cleanup(self):
     with self.cleanup_lock:  # Lock으로 보호 (메인스레드와 그린렛이 동시 접근)
@@ -156,8 +163,7 @@ if __name__ == "__main__":
 
   sys.exit(app.exec_())
 
-#애니메이션 처리 좀 하자.
-#클라에서 애니메이션 스탑 시그널을 보내면 멈추게 만들자
+#일단 애니메이션 동작 하는 것 같은데 클라이어트에서 버튼 여러개 만들어서 테스트해보자
 
 #run 3번째에는 아이템 분해 즉 1시간30분마다 분해. run도 그렇고 아이템 분해 할떄
 #이미지 서치를 어떤 식으로 할지 생각 좀 해보자.

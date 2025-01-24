@@ -130,7 +130,7 @@ class TabTreeview(QWidget):
         print("tab_index",tab_index)
         if tab_index != -1:  # 유효한 인덱스라면
           self.tab_container.tabBar().setTabTextColor(tab_index, QColor("red"))
-        self.tab_contents[PC_id].tabTreeview_btn_img.complete_task(self.tab_contents[PC_id].tabTreeview_btn_img.last_clicked_button.pop(0))
+        # self.tab_contents[PC_id].tabTreeview_btn_img.complete_task(self.tab_contents[PC_id].tabTreeview_btn_img.last_clicked_button.pop(0))
       else:
         print("없는 아이디")
     elif flag==1:
@@ -138,7 +138,7 @@ class TabTreeview(QWidget):
         self.tab_contents[PC_id].rowId[id].setText(2,time)
         self.tab_contents[PC_id].rowId[id].setText(3,log)
         self.tab_contents[PC_id].rowId[id].setTextAlignment(2,Qt.AlignHCenter)
-        self.tab_contents[PC_id].tabTreeview_btn_img.complete_task(self.tab_contents[PC_id].tabTreeview_btn_img.last_clicked_button.pop(0))
+        # self.tab_contents[PC_id].tabTreeview_btn_img.complete_task(self.tab_contents[PC_id].tabTreeview_btn_img.last_clicked_button.pop(0))
       else:
         print("없는 아이디")
   
@@ -202,4 +202,13 @@ class TabTreeview(QWidget):
       for computer_id in self.tab_contents.keys():
         self.tab_contents[computer_id].tabTreeview_btn_img.send_to_command()   
         # self.start_animation(clicked_button)  # 애니메이션 추가
+  
+  def stop_animation(self,btn_name,computer_id):
+    button_name=btn_name
+    # 작업 완료 시 애니메이션 중지 및 버튼 복원
+    
+    animation =  self.tab_contents[computer_id].tabTreeview_btn_img.animations.pop(button_name)  # 애니메이션 제거
+    animation.stop()
+    self.tab_contents[computer_id].tabTreeview_btn_img.last_clicked_button[button_name].setStyleSheet("background-color: none;")
+    self.tab_contents[computer_id].tabTreeview_btn_img.last_clicked_button[button_name].setEnabled(True)
 
