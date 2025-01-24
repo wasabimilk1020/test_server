@@ -100,6 +100,7 @@ class WebSocketServer:
 
   def stop_animation(self, sid, btn_name):
     button_name=btn_name
+    print("서버 stop animation: ",button_name)
     computer_id=self.get_computer_id(sid)
     # window.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.complete_task(window.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.last_clicked_button.pop(0))
     self.signal_generator.user_signal_stop_animation.emit(button_name, computer_id)  #여기서 애니메이션을 중단 시킬 버튼을 전달해야 중단되는대

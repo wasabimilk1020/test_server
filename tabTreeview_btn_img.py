@@ -171,7 +171,7 @@ class TabTreeview_btn(QWidget):
 
       #버튼 클릭 시 동작
       button.clicked.connect(self.send_to_command)
-      button.clicked.connect(lambda _, btn=button, btn_name=button_name: self.start_animation(btn, btn_name))
+      # button.clicked.connect(lambda _, btn=button, btn_name=button_name: self.start_animation(btn, btn_name))
       
 
       # GridLayout에 버튼을 다시 배치
@@ -240,7 +240,7 @@ class TabTreeview_btn(QWidget):
     else:
       clicked_button=clk_btn
       button_name=btn_name
-      
+
     data_list=[]
     selected_characters={}
     character_list=[]
@@ -260,6 +260,7 @@ class TabTreeview_btn(QWidget):
       sid=self.pcList[self.tab_name]
       #emit_data={"버튼이름":[데이터],"character_list":[{"아이디1":핸들 값1,"아이디2":핸들 값2}]}
       self.sio.emit('button_schedule', emit_data, to=sid)
+      self.start_animation(clicked_button, button_name) #애니메이션 추가
     else:
       print("set account 필요함")
 
