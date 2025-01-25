@@ -1,2 +1,2 @@
-list=[1,2,3,4]
-print(list.pop(3))
+dict={"kim":1,"kim":2}
+print(dict)

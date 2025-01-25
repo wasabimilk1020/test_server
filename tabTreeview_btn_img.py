@@ -3,8 +3,10 @@ from PyQt5.QtGui import QPixmap,QMovie,QColor,QStandardItemModel
 import sys,json
 from PyQt5.QtCore import Qt,QVariantAnimation, QTimer,QObject,pyqtSignal
 import schedule
+import  time
 
 class SignalGenerator(QObject):
+  user_signal_send_to_command= pyqtSignal(object,object,object)
   user_signal_start_animation = pyqtSignal(object,object)
 
 class ImageViewer(QLabel):
@@ -69,6 +71,7 @@ class TabTreeview_btn(QWidget):
     self.run_btn_cnt=0
     self.signal_generator = SignalGenerator()
     self.signal_generator.user_signal_start_animation.connect(self.start_animation)
+    self.signal_generator.user_signal_send_to_command.connect(self.send_to_command)
     
     #reset 및 client status 위젯 및 레이아웃 세팅
     self.client_status_layout = QVBoxLayout()
@@ -139,12 +142,20 @@ class TabTreeview_btn(QWidget):
 
     self.add_buttons()  #default button 생성
 
-  def set_schedule_chkStatus(self,clicked_button,button_name,sid):
+  def set_schedule_chkStatus(self, clicked_button, button_name, sid):
     self.run_btn_cnt+=1
     self.last_clicked_button[button_name]=clicked_button
 
     if self.run_btn_cnt%3==0:
       print("아이템분해")
+      buttons_dict = {
+        **self.dungeon_buttons,
+        **self.routine_buttons,
+        **self.setting_buttons,
+      }
+      button = buttons_dict.get("아이템분해")[0] #아이템분해 버튼 객체
+      self.signal_generator.user_signal_send_to_command.emit(button, "아이템분해",1)
+      # self.send_to_command(button, "아이템분해")
       self.run_btn_cnt=0
     else:
       # {"버튼이름":[데이터],"character_list":[{"아이디1":핸들 값1,"아이디2":핸들 값2}]}
@@ -155,13 +166,14 @@ class TabTreeview_btn(QWidget):
   def checkStatusRun(self, checked):
     clicked_button=self.sender()
     button_name="status_check_button"
+
     sid=self.pcList[self.tab_name]
     if checked:
       self.run_btn.setText("ON")
       self.status_check.setText("Status Check:ON")
       self.status_check.setStyleSheet("color:green")
       # schedule.every(30).minutes.do(self.set_schedule_chkStatus).tag('chkStatusSchedule')
-      schedule.every(15).seconds.do(self.set_schedule_chkStatus,clicked_button,button_name,sid).tag('chkStatusSchedule')
+      schedule.every(15).seconds.do(self.set_schedule_chkStatus, clicked_button, button_name, sid).tag('chkStatusSchedule')
 
     else:
       self.run_btn.setText("OFF")
@@ -266,23 +278,17 @@ class TabTreeview_btn(QWidget):
     return emit_data
 
   #왼쪽 버튼 클릭 시 이벤트 핸들러  
-  def send_to_command(self, button=None, title=None):
-    clk_btn=self.sender()
-    btn_name=clk_btn.text()
-
-    #이 부분 텍스트로 감지하는 방법이 안좋은 것 같은대 나중에 다시 생각해보자
-    if btn_name == "스케줄 설정":
+  def send_to_command(self, button=None, title=None, flag=None):
+    if flag is not None:
       clicked_button=button
-      button_name=title
+      button_name=title    
     else:
-      clicked_button=clk_btn
-      button_name=btn_name
-
+      clicked_button=self.sender()
+      button_name=clicked_button.text()
+   
     data_list=[]
     selected_characters={}
     character_list=[]
-    # emit_data={}
-    # buttonFromJson=self.buttonsFromJson # {"그룹이름":[{버튼속성},{버튼속성}]}
     
     # 그룹 이름과 관련된 버튼 데이터를 매핑
     button_dict_map = {
@@ -306,17 +312,10 @@ class TabTreeview_btn(QWidget):
     # 버튼 배경색 업데이트
     button.setStyleSheet(f"background-color: {color.name()};")
 
-  # def complete_task(self,button):
-  #   # 작업 완료 시 애니메이션 중지 및 버튼 복원
-  #   if button in self.animations:
-  #       animation = self.animations.pop(button)  # 애니메이션 제거
-  #       animation.stop()
-  #   button.setStyleSheet("background-color: none;")
-  #   button.setEnabled(True)
-
   def start_animation(self,btn, btn_name):
     button=btn
     button_name=btn_name
+
     # 버튼 클릭 비활성화 (중복 클릭 방지)
     button.setEnabled(False)
     
@@ -330,8 +329,9 @@ class TabTreeview_btn(QWidget):
     animation.valueChanged.connect(lambda color: self.update_button_color(color, button))  # 색상 변경 연결
     animation.setLoopCount(-1)  # 무한 반복
     animation.start()
-
+   
     self.animations[button_name] = animation # 애니메이션 저장
+    
 
 #---이미지 섹션
   def image_layout(self, character_name, time, image_path, gif_path):
