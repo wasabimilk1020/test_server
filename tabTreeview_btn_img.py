@@ -1,9 +1,11 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout,QHBoxLayout, QPushButton, QLabel,QMainWindow,QGroupBox,QLineEdit,QGridLayout,QSpinBox,QSizePolicy, QMessageBox
 from PyQt5.QtGui import QPixmap,QMovie,QColor,QStandardItemModel
 import sys,json
-from PyQt5.QtCore import Qt,QVariantAnimation, QTimer
+from PyQt5.QtCore import Qt,QVariantAnimation, QTimer,QObject,pyqtSignal
 import schedule
 
+class SignalGenerator(QObject):
+  user_signal_start_animation = pyqtSignal(object,object)
 
 class ImageViewer(QLabel):
   def __init__(self, image_path):
@@ -65,6 +67,8 @@ class TabTreeview_btn(QWidget):
     self.last_clicked_button={}
     self.character_list=load_json(f"./json_files/character_list/{tab_name}.json", tab_name)
     self.run_btn_cnt=0
+    self.signal_generator = SignalGenerator()
+    self.signal_generator.user_signal_start_animation.connect(self.start_animation)
     
     #reset 및 client status 위젯 및 레이아웃 세팅
     self.client_status_layout = QVBoxLayout()
@@ -135,22 +139,29 @@ class TabTreeview_btn(QWidget):
 
     self.add_buttons()  #default button 생성
 
-  def set_schedule_chkStatus(self):
+  def set_schedule_chkStatus(self,clicked_button,button_name,sid):
     self.run_btn_cnt+=1
+    self.last_clicked_button[button_name]=clicked_button
 
     if self.run_btn_cnt%3==0:
       print("아이템분해")
       self.run_btn_cnt=0
     else:
+      # {"버튼이름":[데이터],"character_list":[{"아이디1":핸들 값1,"아이디2":핸들 값2}]}
+      self.sio.emit('button_schedule', {"status_check_button":[],"character_list":{}}, to=sid)
+      self.signal_generator.user_signal_start_animation.emit(clicked_button, button_name)  #(button_name="OFF")
       print("그냥 런")
 
   def checkStatusRun(self, checked):
+    clicked_button=self.sender()
+    button_name="status_check_button"
+    sid=self.pcList[self.tab_name]
     if checked:
       self.run_btn.setText("ON")
       self.status_check.setText("Status Check:ON")
       self.status_check.setStyleSheet("color:green")
       # schedule.every(30).minutes.do(self.set_schedule_chkStatus).tag('chkStatusSchedule')
-      schedule.every(3).seconds.do(self.set_schedule_chkStatus).tag('chkStatusSchedule')
+      schedule.every(15).seconds.do(self.set_schedule_chkStatus,clicked_button,button_name,sid).tag('chkStatusSchedule')
 
     else:
       self.run_btn.setText("OFF")
@@ -248,9 +259,10 @@ class TabTreeview_btn(QWidget):
       if check_state== Qt.Checked:  #체크 된 아이디만 실행
         handle=self.character_list[name]
         selected_characters[name]=handle
-        self.last_clicked_button[button_name]=button
+        # self.last_clicked_button[button_name]=button
     emit_data["character_list"]=selected_characters
     
+    #emit_data={"버튼이름":[데이터],"character_list":{"아이디1":핸들 값1,"아이디2":핸들 값2}}
     return emit_data
 
   #왼쪽 버튼 클릭 시 이벤트 핸들러  
@@ -278,7 +290,7 @@ class TabTreeview_btn(QWidget):
       "루틴": self.routine_buttons,
       "세팅": self.setting_buttons,
     }
-    
+    self.last_clicked_button[button_name]=clicked_button
     emit_data=self.generate_button_data(button_name,button_dict_map,selected_characters,clicked_button)
     
     if self.pcList is not None and self.sio is not None:
@@ -307,7 +319,7 @@ class TabTreeview_btn(QWidget):
     button_name=btn_name
     # 버튼 클릭 비활성화 (중복 클릭 방지)
     button.setEnabled(False)
-
+    
     # 애니메이션 생성
     animation = QVariantAnimation(
          self,
