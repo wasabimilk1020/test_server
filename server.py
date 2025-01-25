@@ -83,8 +83,6 @@ class WebSocketServer:
       print(f"Error saving JSON file for {computer_id}: {e}")  
 
     self.signal_generator.user_signal_treeview.emit(computer_id)
-    # window.tab_tree_view.setup_character_list(character_list, computer_id)  #탭 클래스 character_list 세팅
-    
     
   def logEvent(self, sid, data):
     #[log_message, id, flag]
@@ -102,8 +100,7 @@ class WebSocketServer:
     button_name=btn_name
     print("서버 stop animation: ",button_name)
     computer_id=self.get_computer_id(sid)
-    # window.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.complete_task(window.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.last_clicked_button.pop(0))
-    self.signal_generator.user_signal_stop_animation.emit(button_name, computer_id)  #여기서 애니메이션을 중단 시킬 버튼을 전달해야 중단되는대
+    self.signal_generator.user_signal_stop_animation.emit(button_name, computer_id)
     
 
   def cleanup(self):
@@ -164,9 +161,11 @@ if __name__ == "__main__":
 
   sys.exit(app.exec_())
 
-#일단 애니메이션 동작 하는 것 같은데 클라이어트에서 버튼 여러개 만들어서 테스트해보자
 
-#run 3번째에는 아이템 분해 즉 1시간30분마다 분해. run도 그렇고 아이템 분해 할떄
+
+#run 만들면된다
+#일단 3번쨰마다 아이템 분해는 되도록 스케쥴은 만듬. 실제로 클라이언트에 emit하도록 만들어야함. 
+# run도 그렇고 아이템 분해 할떄
 #이미지 서치를 어떤 식으로 할지 생각 좀 해보자.
 #1. 자동 사냥이 서치 안되면 죽었던지 사냥이 멈춰있는 상태다
 #2. 무접속 플레이 확인해보고 있으면 죽어서 마을간거임

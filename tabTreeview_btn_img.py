@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout,QHBoxLayout, QPus
 from PyQt5.QtGui import QPixmap,QMovie,QColor,QStandardItemModel
 import sys,json
 from PyQt5.QtCore import Qt,QVariantAnimation, QTimer
+import schedule
 
 
 class ImageViewer(QLabel):
@@ -63,6 +64,7 @@ class TabTreeview_btn(QWidget):
     self.show_context_menu=show_context_menu
     self.last_clicked_button={}
     self.character_list=load_json(f"./json_files/character_list/{tab_name}.json", tab_name)
+    self.run_btn_cnt=0
     
     #reset 및 client status 위젯 및 레이아웃 세팅
     self.client_status_layout = QVBoxLayout()
@@ -73,19 +75,18 @@ class TabTreeview_btn(QWidget):
     self.status_check = QLabel("Status Check:OFF")
     self.status_check.setStyleSheet("color: red;")
     self.status_check.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    self.client_status_layout.addWidget(self.status_check)
+    self.client_status_layout.addWidget(self.status_check)    
     
-    self.run_cancel_layout=QHBoxLayout()
-    self.run_cancel_layout.setAlignment(Qt.AlignLeft)
-    self.run_cancel_layout.setContentsMargins(20, 0, 0, 0)
-    self.run_btn = QPushButton("Run")
-    self.cancel_btn = QPushButton("Cancel")
-    self.run_cancel_layout.addWidget(self.run_btn)
-    self.run_cancel_layout.addWidget(self.cancel_btn)
+    self.run_btn = QPushButton("OFF")
+    self.run_btn.setFixedSize(100, 22)
+    self.run_btn.setCheckable(True)
+    self.run_btn.toggled.connect(self.checkStatusRun)
+
 
     self.client_status_horizontal=QHBoxLayout()
+    self.client_status_horizontal.setAlignment(Qt.AlignLeft)
     self.client_status_horizontal.addLayout(self.client_status_layout)
-    self.client_status_horizontal.addLayout(self.run_cancel_layout)
+    self.client_status_horizontal.addWidget(self.run_btn)
 
     #reset and Set Account buttons
     self.reset_button = QPushButton("reset")
@@ -133,6 +134,29 @@ class TabTreeview_btn(QWidget):
     self.animations = {}  #애니메이션 객체를 위한 딕트
 
     self.add_buttons()  #default button 생성
+
+  def set_schedule_chkStatus(self):
+    self.run_btn_cnt+=1
+
+    if self.run_btn_cnt%3==0:
+      print("아이템분해")
+      self.run_btn_cnt=0
+    else:
+      print("그냥 런")
+
+  def checkStatusRun(self, checked):
+    if checked:
+      self.run_btn.setText("ON")
+      self.status_check.setText("Status Check:ON")
+      self.status_check.setStyleSheet("color:green")
+      # schedule.every(30).minutes.do(self.set_schedule_chkStatus).tag('chkStatusSchedule')
+      schedule.every(3).seconds.do(self.set_schedule_chkStatus).tag('chkStatusSchedule')
+
+    else:
+      self.run_btn.setText("OFF")
+      self.status_check.setText("Status Check:OFF")
+      self.status_check.setStyleSheet("color:red")
+      schedule.clear(tag='chkStatusSchedule')
 
   def setup_data(self, pcList, sio):
     self.pcList=pcList
@@ -234,6 +258,7 @@ class TabTreeview_btn(QWidget):
     clk_btn=self.sender()
     btn_name=clk_btn.text()
 
+    #이 부분 텍스트로 감지하는 방법이 안좋은 것 같은대 나중에 다시 생각해보자
     if btn_name == "스케줄 설정":
       clicked_button=button
       button_name=title
