@@ -52,6 +52,7 @@ class WebSocketServer:
     self.signal_generator.user_signal_treeview.emit(computer_id)
     self.signal_generator.user_signal_client_status_label.emit("Client Status:ON",computer_id)
     window.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.setup_data(self.pcList, self.sio)  #버튼 클래스 pcList setup
+    window.send_to_image.setup_data(self.sio)
    
     print(f"connect{computer_id} 클라이언트", sid)
 
