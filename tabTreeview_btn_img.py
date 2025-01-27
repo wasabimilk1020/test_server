@@ -9,21 +9,21 @@ class SignalGenerator(QObject):
   user_signal_send_to_command= pyqtSignal(object,object,object)
   user_signal_start_animation = pyqtSignal(object,object)
 
-class ImageViewer(QLabel):
-  def __init__(self, image_path):
-    super().__init__()
-    self.full_pixmap = QPixmap(image_path)  # 전체 이미지
-    self.setPixmap(self.full_pixmap.copy(0, 0, 50, 30))  # 일부 이미지만 표시
+# class ImageViewer(QLabel):
+#   def __init__(self, image_path):
+#     super().__init__()
+#     self.full_pixmap = QPixmap(image_path)  # 전체 이미지
+#     self.setPixmap(self.full_pixmap.copy(0, 0, 50, 30))  # 일부 이미지만 표시
 
-  def enterEvent(self, event):
-    """마우스가 들어왔을 때 전체 이미지를 표시"""
-    self.setPixmap(self.full_pixmap.copy(0, 0, 100, 30))
-    super().enterEvent(event)
+#   def enterEvent(self, event):
+#     """마우스가 들어왔을 때 전체 이미지를 표시"""
+#     self.setPixmap(self.full_pixmap.copy(0, 0, 100, 30))
+#     super().enterEvent(event)
 
-  def leaveEvent(self, event):
-    """마우스가 나갔을 때 이미지를 일부만 표시"""
-    self.setPixmap(self.full_pixmap.copy(0, 0, 50, 30))
-    super().leaveEvent(event)
+#   def leaveEvent(self, event):
+#     """마우스가 나갔을 때 이미지를 일부만 표시"""
+#     self.setPixmap(self.full_pixmap.copy(0, 0, 50, 30))
+#     super().leaveEvent(event)
 
 class GifViewer(QLabel):
   def __init__(self, gif_path):
@@ -331,31 +331,32 @@ class TabTreeview_btn(QWidget):
     self.animations[button_name] = animation # 애니메이션 저장
     
 
-#---이미지 섹션
-  def image_layout(self, character_name, time, image_path, gif_path):
-    """
-    클라이언트 데이터 기반으로 UI 생성
-    :param character_name: 캐릭터 이름 (str)
-    :param time: 시간 (str)
-    :param image_path: 이미지 경로 (str) 서버에 이미지를 저장해야됨
-    :param gif_path: GIF 경로 (str) 서버에 gif를 저장해야함
-    """
-    # 수직 레이아웃 생성
-    image_vertical_box = QVBoxLayout()
-    # 캐릭터 이름 QLabel
-    name_label = QLabel(character_name)
-    image_vertical_box.addWidget(name_label)
-    # 시간 QLabel
-    time_label = QLabel(time)
-    image_vertical_box.addWidget(time_label)
-    # 이미지 뷰어
-    image_viewer = ImageViewer(image_path)
-    image_vertical_box.addWidget(image_viewer)
-    # GIF 뷰어
-    gif_viewer = GifViewer(gif_path)
-    image_vertical_box.addWidget(gif_viewer)
-    # 메인 레이아웃에 수직 레이아웃 추가
-    self.image_main_layout.addLayout(image_vertical_box)
+# #---이미지 섹션
+#   # def image_layout(self, character_name, time, image_path, gif_path): #일단 gif는 보류
+#   def image_layout(self, character_name, time, image_path):
+#     """
+#     클라이언트 데이터 기반으로 UI 생성
+#     :param character_name: 캐릭터 이름 (str)
+#     :param time: 시간 (str)
+#     :param image_path: 이미지 경로 (str) 서버에 이미지를 저장해야됨
+#     :param gif_path: GIF 경로 (str) 서버에 gif를 저장해야함
+#     """
+#     # 수직 레이아웃 생성
+#     image_vertical_box = QVBoxLayout()
+#     # 캐릭터 이름 QLabel
+#     name_label = QLabel(character_name)
+#     image_vertical_box.addWidget(name_label)
+#     # 시간 QLabel
+#     time_label = QLabel(time)
+#     image_vertical_box.addWidget(time_label)
+#     # 이미지 뷰어
+#     image_viewer = ImageViewer(image_path)
+#     image_vertical_box.addWidget(image_viewer)
+#     # # GIF 뷰어
+#     # gif_viewer = GifViewer(gif_path)
+#     # image_vertical_box.addWidget(gif_viewer)
+#     # 메인 레이아웃에 수직 레이아웃 추가
+#     self.image_main_layout.addLayout(image_vertical_box)
     
   #트리뷰 Status and Log 초기화 핸들러
   def reset_status_and_log(self):

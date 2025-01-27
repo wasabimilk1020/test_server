@@ -89,7 +89,6 @@ class ImageAttachApp(QWidget):
         self.data.append(hash_value)
         self.data.append(file_name)
         self.sio.emit("recvImage",self.data)
-        # self.setText("이미지를 드래그 앤 드롭 <br> 혹은  <br> 여기를 클릭하세요")
         self.data=[]
         self.image_label.reset()  # 이미지 전송 후 초기화
       else:

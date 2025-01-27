@@ -8,12 +8,15 @@ from urllib.parse import parse_qs
 import sys
 from gui_main import MainWindow
 import json
+import base64
 
 class SignalGenerator(QObject):
   user_signal_log = pyqtSignal(object, object, object, object, object)
   user_signal_treeview = pyqtSignal(object)
   user_signal_client_status_label = pyqtSignal(object,object)
   user_signal_stop_animation = pyqtSignal(object,object)
+  user_signal_captured_img = pyqtSignal(object,object,object,object)
+
 
   
 class WebSocketServer:
@@ -34,6 +37,7 @@ class WebSocketServer:
     self.signal_generator.user_signal_log.connect(window.tab_tree_view.addLog)
     self.signal_generator.user_signal_client_status_label.connect(window.tab_tree_view.client_status_label)
     self.signal_generator.user_signal_stop_animation.connect(window.tab_tree_view.stop_animation)
+    self.signal_generator.user_signal_captured_img.connect(window.tab_tree_view.image_layout)
 
     # 이벤트 핸들러 등록
     self.sio.on('connect', self.connect)
@@ -42,6 +46,7 @@ class WebSocketServer:
     self.sio.on("revAccount", self.revAccount)
     self.sio.on("logEvent", self.logEvent)
     self.sio.on("stop_animation", self.stop_animation)
+    self.sio.on("captured_image", self.captured_image)
   
   def connect(self, sid, environ):
     query_string = environ.get("QUERY_STRING")
@@ -99,9 +104,21 @@ class WebSocketServer:
 
   def stop_animation(self, sid, btn_name):
     button_name=btn_name
-    print("서버 stop animation: ",button_name)
     computer_id=self.get_computer_id(sid)
     self.signal_generator.user_signal_stop_animation.emit(button_name, computer_id)
+  
+  def captured_image(self, sid, data):
+    id=data[0]
+    current_time=data[1]
+    img=data[2]
+    computer_id=self.get_computer_id(sid)
+
+    image_data = base64.b64decode(img)
+    # 파일로 저장
+    with open(f"./image_files/{id}.png", "wb") as f:
+      f.write(image_data)
+    self.signal_generator.user_signal_captured_img.emit(id, current_time, f"./image_files/{id}.png", computer_id)
+    # self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png")  
     
 
   def cleanup(self):
@@ -168,6 +185,8 @@ if __name__ == "__main__":
 #statusCheck 스케쥴이 짧을 때 다른 버튼과 겹쳐서 statusChk가 두 번 이상 쌓이면 start가 stop보다 먼지 일어나면서
 #같은 key로 뒤에 하나는 덮어씌워진다.즉, 객체가 2개라야 하는대 1개이고 첫 번째 실행만 마치면 객체는 비어 있게 되서 두 번째 실행 때 오류남
  
+#클라이언트 사이드 해주자
+
 # run도 그렇고 아이템 분해 할떄
 #이미지 서치를 어떤 식으로 할지 생각 좀 해보자.
 #1. 자동 사냥이 서치 안되면 죽었던지 사냥이 멈춰있는 상태다
@@ -180,10 +199,6 @@ if __name__ == "__main__":
 #8. 아이템분해 루틴에서는어떻게 할까?
 #9. 자동사냥 없으면 페널티 클릭하고 아이템 분해 후 스케쥴 사냥
 #10. 자동 사냥 있으면 바로 아이템 분해
-
-#이미지 보내는 것 하고 
-
-#클라이언트 사이드 해주자
 
 #서버만 끊어졌다 들어왔을 때 클라이언트 접속 저절로 되고 ping-pong이 안된다.
 

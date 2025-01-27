@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QTabWidget,QTabBar,QHeaderView,QMenu
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor,QPixmap
 from tabTreeview_btn_img import TabTreeview_btn
 from json_editor import JsonEditor
 import json
@@ -12,7 +12,26 @@ def load_json(json_file, PC_id):
           return json.load(f)
   except (FileNotFoundError, json.JSONDecodeError):
       print(f"{PC_id} json 파일을 찾을 수 없음")
-  
+
+class ImageViewer(QLabel):
+  def __init__(self, image_path):
+    super().__init__()
+    self.path=image_path
+
+  def set_pixmap(self):
+    self.full_pixmap = QPixmap(self.path)  # 전체 이미지
+    self.setPixmap(self.full_pixmap.copy(0, 0, 50, 30))  # 일부 이미지만 표시
+
+  def enterEvent(self, event):
+    """마우스가 들어왔을 때 전체 이미지를 표시"""
+    self.setPixmap(self.full_pixmap.copy(0, 0, 100, 30))
+    super().enterEvent(event)
+
+  def leaveEvent(self, event):
+    """마우스가 나갔을 때 이미지를 일부만 표시"""
+    self.setPixmap(self.full_pixmap.copy(0, 0, 50, 30))
+    super().leaveEvent(event)
+
 # 탭 클래스
 class Tab(QWidget):
     def __init__(self,tab_name, tab_container, tab_contents,show_context_menu):
@@ -20,7 +39,6 @@ class Tab(QWidget):
         self.tab_name = tab_name  # 탭 이름 설정
         self.tab_container = tab_container
         self.sio = None
-        self.pcList = None
         self.character_list=None
         self.rowId={} #{"아이디":rowId}
         self.character_list={}
@@ -64,9 +82,11 @@ class Tab(QWidget):
         # 체크박스 상태 변경 이벤트 연결
         self.tree_widget.itemChanged.connect(self.on_check_allOrnot)
 
-        #이미지 테스트용 데이터
-        for i in range(10):
-          self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png", "test_gif.gif")  
+        # #이미지 테스트용 데이터
+        # for i in range(10):
+        #   # self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png", "test_gif.gif")  #git포함
+        #   self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png")  
+
           
         self.setLayout(self.tab_layout)
 
@@ -97,14 +117,15 @@ class TabTreeview(QWidget):
     super().__init__()
     self.tab_container = QTabWidget()
     self.tab_layout = QVBoxLayout()
-    self.pcList = None
     self.sio = None
-    self.pcList = None
+    self.nameList=[]
+    
     # --- 탭 추가 ---
     self.tab_contents = {}  # 탭 객체 딕트 {"PC01":탭 객체}
     self.add_tabs(self.tab_container)
     self.tab_layout.addWidget(self.tab_container)
     self.setLayout(self.tab_layout)
+    self.image_widgets={}
 
   def setup_character_list(self, PC_id):
     pass
@@ -148,9 +169,9 @@ class TabTreeview(QWidget):
   def populate_data(self, PC_id):
     # name_list=self.character_list.keys()  #{"아이디":핸들 값}
     character_list=load_json(f"./json_files/character_list/{PC_id}.json", PC_id)
-    name_list=character_list.keys()
+    self.name_list=character_list.keys()
 
-    if name_list==[]:  # 빈 딕셔너리일 경우
+    if self.name_list==[]:  # 빈 딕셔너리일 경우
       print("name_list가 비어 있음")
     else:
       # 첫 번째 열 첫 번째 행에 전체 체크박스 추가
@@ -159,7 +180,7 @@ class TabTreeview(QWidget):
       header_item.setCheckState(0, Qt.Checked)
       self.tab_contents[PC_id].tree_widget.addTopLevelItem(header_item)
       # 데이터 추가
-      for name in name_list:
+      for name in self.name_list:
         self.tab_contents[PC_id].rowId[name] = QTreeWidgetItem(["", name])
         self.tab_contents[PC_id].rowId[name].setFlags(self.tab_contents[PC_id].rowId[name].flags() | Qt.ItemIsUserCheckable)
         self.tab_contents[PC_id].rowId[name].setCheckState(0, Qt.Checked)
@@ -213,4 +234,40 @@ class TabTreeview(QWidget):
     # print("last_clicked_button: ",self.tab_contents[computer_id].tabTreeview_btn_img.last_clicked_button)
     self.tab_contents[computer_id].tabTreeview_btn_img.last_clicked_button[button_name].setStyleSheet("background-color: none;")
     self.tab_contents[computer_id].tabTreeview_btn_img.last_clicked_button[button_name].setEnabled(True)
+
+  #---이미지 섹션
+  # def image_layout(self, character_name, time, image_path, gif_path): #일단 gif는 보류
+  def image_layout(self, character_name, time, image_path, computer_id):
+    # 수직 레이아웃 생성
+    image_vertical_box = QVBoxLayout()
+
+    if len(self.image_widgets) <len(self.name_list): 
+      self.image_widgets[character_name]=[]
+      # 캐릭터 이름 QLabel
+      name_label = QLabel(character_name)      
+      image_vertical_box.addWidget(name_label)
+      self.image_widgets[character_name].append(name_label)
+
+      # 시간 QLabel
+      time_label = QLabel(time)
+      image_vertical_box.addWidget(time_label)
+      self.image_widgets[character_name].append(time_label)
+
+      # 이미지 뷰어
+      image_viewer = ImageViewer(image_path)
+      image_viewer.set_pixmap()
+      image_vertical_box.addWidget(image_viewer)
+      self.image_widgets[character_name].append(image_viewer)
+      self.tab_contents[computer_id].tabTreeview_btn_img.image_main_layout.addLayout(image_vertical_box)
+    else:
+      self.image_widgets[character_name][0].setText(character_name)
+      self.image_widgets[character_name][1].setText(time)
+      self.image_widgets[character_name][2].set_pixmap()
+
+
+
+    # # GIF 뷰어
+    # gif_viewer = GifViewer(gif_path)
+    # image_vertical_box.addWidget(gif_viewer)
+
 
