@@ -185,12 +185,12 @@ class TabTreeview(QWidget):
         self.tab_contents[PC_id].rowId[name].setFlags(self.tab_contents[PC_id].rowId[name].flags() | Qt.ItemIsUserCheckable)
         self.tab_contents[PC_id].rowId[name].setCheckState(0, Qt.Checked)
         self.tab_contents[PC_id].tree_widget.addTopLevelItem(self.tab_contents[PC_id].rowId[name])
-        #컬럼 테스트용 데이터
-        self.tab_contents[PC_id].rowId[name].setText(2,"아이템")
-        self.tab_contents[PC_id].rowId[name].setText(3,"무야호")
-        self.tab_contents[PC_id].rowId[name].setText(4,"220")
-      # 합계 업데이트
-      self.tab_contents[PC_id].update_sum()
+      #   #컬럼 테스트용 데이터
+      #   self.tab_contents[PC_id].rowId[name].setText(2,"아이템")
+      #   self.tab_contents[PC_id].rowId[name].setText(3,"무야호")
+      #   self.tab_contents[PC_id].rowId[name].setText(4,"220")
+      # # 합계 업데이트
+      # self.tab_contents[PC_id].update_sum()
   
   def client_status_label(self, status, PC_id):
     self.tab_contents[PC_id].tabTreeview_btn_img.client_status.setText(status)
