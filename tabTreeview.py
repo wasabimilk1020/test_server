@@ -39,9 +39,7 @@ class Tab(QWidget):
         self.tab_name = tab_name  # 탭 이름 설정
         self.tab_container = tab_container
         self.sio = None
-        self.character_list=None
         self.rowId={} #{"아이디":rowId}
-        self.character_list={}
         self.tab_contents=tab_contents
         self.show_context_menu=show_context_menu
 
@@ -119,6 +117,7 @@ class TabTreeview(QWidget):
     self.tab_layout = QVBoxLayout()
     self.sio = None
     self.nameList=[]
+    self.character_list=None
     
     # --- 탭 추가 ---
     self.tab_contents = {}  # 탭 객체 딕트 {"PC01":탭 객체}
@@ -170,7 +169,8 @@ class TabTreeview(QWidget):
     # name_list=self.character_list.keys()  #{"아이디":핸들 값}
     character_list=load_json(f"./json_files/character_list/{PC_id}.json", PC_id)
     self.name_list=character_list.keys()
-
+    self.tab_contents[PC_id].tabTreeview_btn_img.setup_character_list(character_list)
+    
     if self.name_list==[]:  # 빈 딕셔너리일 경우
       print("name_list가 비어 있음")
     else:

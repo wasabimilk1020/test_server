@@ -61,13 +61,13 @@ class TabTreeview_btn(QWidget):
     self.tab_name=tab_name
     self.sio=None
     self.pcList=None
-    # self.character_list=None
     self.rowId=rowId
     self.tab_widget=tab_widget
     self.tab_contents=tab_contents
     self.show_context_menu=show_context_menu
     self.last_clicked_button={}
-    self.character_list=load_json(f"./json_files/character_list/{tab_name}.json", tab_name)
+    # self.character_list=load_json(f"./json_files/character_list/{tab_name}.json", tab_name)
+    self.character_list=None
     self.run_btn_cnt=0
     self.signal_generator = SignalGenerator()
     self.signal_generator.user_signal_start_animation.connect(self.start_animation)
@@ -142,6 +142,12 @@ class TabTreeview_btn(QWidget):
 
     self.add_buttons()  #default button 생성
 
+  def setup_data(self, pcList, sio):
+    self.pcList=pcList
+    self.sio=sio
+  
+  def setup_character_list(self, character_list):
+    self.character_list=character_list
   def set_schedule_chkStatus(self, clicked_button, button_name, sid):
     self.run_btn_cnt+=1
     self.last_clicked_button[button_name]=clicked_button
@@ -177,10 +183,6 @@ class TabTreeview_btn(QWidget):
       self.status_check.setStyleSheet("color:red")
       schedule.clear(tag='chkStatusSchedule')
 
-  def setup_data(self, pcList, sio):
-    self.pcList=pcList
-    self.sio=sio
-  
   def create_button(self, grid_layout, button_list, buttons):
     #buttons=[{버튼속성},{버튼속성}]
     numOfbutton=len(buttons)
