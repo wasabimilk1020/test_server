@@ -16,9 +16,8 @@ class SignalGenerator(QObject):
   user_signal_client_status_label = pyqtSignal(object,object)
   user_signal_stop_animation = pyqtSignal(object,object)
   user_signal_captured_img = pyqtSignal(object,object,object,object)
+  user_signal_diamond = pyqtSignal(object, object, object)
 
-
-  
 class WebSocketServer:
   def __init__(self, host='127.0.0.1', port=4000, window=None):
     self.host=host
@@ -38,6 +37,7 @@ class WebSocketServer:
     self.signal_generator.user_signal_client_status_label.connect(window.tab_tree_view.client_status_label)
     self.signal_generator.user_signal_stop_animation.connect(window.tab_tree_view.stop_animation)
     self.signal_generator.user_signal_captured_img.connect(window.tab_tree_view.image_layout)
+    self.signal_generator.user_signal_diamond.connect(window.tab_tree_view.diamond_update_sum)
 
     # 이벤트 핸들러 등록
     self.sio.on('connect', self.connect)
@@ -47,6 +47,7 @@ class WebSocketServer:
     self.sio.on("logEvent", self.logEvent)
     self.sio.on("stop_animation", self.stop_animation)
     self.sio.on("captured_image", self.captured_image)
+    self.sio.on("get_diamond", self.get_diamond)
   
   def connect(self, sid, environ):
     query_string = environ.get("QUERY_STRING")
@@ -120,6 +121,12 @@ class WebSocketServer:
     self.signal_generator.user_signal_captured_img.emit(id, current_time, f"./image_files/{id}.png", computer_id)
     # self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png")  
     
+  def get_diamond(self, sid, data):
+    diamond=data[0]
+    character_name=data[1]
+    computer_id=self.get_computer_id(sid)
+    self.signal_generator.user_signal_diamond.emit(diamond, computer_id, character_name)
+
 
   def cleanup(self):
     with self.cleanup_lock:  # Lock으로 보호 (메인스레드와 그린렛이 동시 접근)
@@ -199,6 +206,8 @@ if __name__ == "__main__":
 #8. 아이템분해 루틴에서는어떻게 할까?
 #9. 자동사냥 없으면 페널티 클릭하고 아이템 분해 후 스케쥴 사냥
 #10. 자동 사냥 있으면 바로 아이템 분해
+
+#statusChk와 offline 상태 자체를 탭 배경색으로도 표시되게 만들자. status가 off면 노란색, offline면 빨간색
 
 #서버만 끊어졌다 들어왔을 때 클라이언트 접속 저절로 되고 ping-pong이 안된다.
 

@@ -147,7 +147,6 @@ class TabTreeview_btn(QWidget):
     self.last_clicked_button[button_name]=clicked_button
 
     if self.run_btn_cnt%3==0:
-      print("아이템분해")
       buttons_dict = {
         **self.dungeon_buttons,
         **self.routine_buttons,
@@ -161,7 +160,6 @@ class TabTreeview_btn(QWidget):
       # {"버튼이름":[데이터],"character_list":[{"아이디1":핸들 값1,"아이디2":핸들 값2}]}
       self.sio.emit('button_schedule', {"status_check_button":[],"character_list":{}}, to=sid)
       self.signal_generator.user_signal_start_animation.emit(clicked_button, button_name)  #(button_name="OFF")
-      print("그냥 런")
 
   def checkStatusRun(self, checked):
     clicked_button=self.sender()

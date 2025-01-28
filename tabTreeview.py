@@ -101,16 +101,16 @@ class Tab(QWidget):
             child_item = self.tree_widget.topLevelItem(i)
             child_item.setCheckState(0, state)
 
-    def update_sum(self):
-      """다이아 컬럼의 숫자 합계 업데이트"""
-      total = 0
-      for i in range(1, self.tree_widget.topLevelItemCount()):
-        item = self.tree_widget.topLevelItem(i)
-        try:
-          total += int(item.text(4))
-        except ValueError:
-          pass  # 숫자가 아니면 무시
-      self.sum_label.setText(f"다이아 합계: {total}")
+    # def update_sum(self):
+    #   """다이아 컬럼의 숫자 합계 업데이트"""
+    #   total = 0
+    #   for i in range(1, self.tree_widget.topLevelItemCount()):
+    #     item = self.tree_widget.topLevelItem(i)
+    #     try:
+    #       total += int(item.text(4))
+    #     except ValueError:
+    #       pass  # 숫자가 아니면 무시
+    #   self.sum_label.setText(f"다이아 합계: {total}")
   
 class TabTreeview(QWidget):
   def __init__(self):
@@ -263,11 +263,21 @@ class TabTreeview(QWidget):
       self.image_widgets[character_name][0].setText(character_name)
       self.image_widgets[character_name][1].setText(time)
       self.image_widgets[character_name][2].set_pixmap()
-
-
-
-    # # GIF 뷰어
-    # gif_viewer = GifViewer(gif_path)
-    # image_vertical_box.addWidget(gif_viewer)
+  
+  def diamond_update_sum(self, data, computer_id, name):
+    """다이아 컬럼의 숫자 합계 업데이트"""
+    diamond=data
+    PC_id=computer_id
+    character_name=name
+    
+    self.tab_contents[PC_id].rowId[character_name].setText(4,diamond)
+    total = 0
+    for i in range(1, self.tab_contents[PC_id].tree_widget.topLevelItemCount()):
+      item = self.tab_contents[PC_id].tree_widget.topLevelItem(i)
+      try:
+        total += int(item.text(4))
+      except ValueError:
+        pass  # 숫자가 아니면 무시
+    self.tab_contents[PC_id].sum_label.setText(f"다이아 합계: {total}")
 
 
