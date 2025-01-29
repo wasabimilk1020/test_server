@@ -48,7 +48,7 @@ class JsonEditor(QWidget):
             group_layout = QVBoxLayout()
 
             table = QTableWidget(len(items), 6)
-            table.setHorizontalHeaderLabels(["Name", "X", "Y", "X 범위", "Y 범위", "Delay"])
+            table.setHorizontalHeaderLabels(["Name", "X", "Y", "X 범위", "Y 범위", "Charge"])
             self.populate_table(table, items)
             self.tables[(tab_name, category)] = table
 
@@ -90,7 +90,7 @@ class JsonEditor(QWidget):
             table.setItem(row, 2, QTableWidgetItem(str(item.get("y", 0))))
             table.setItem(row, 3, QTableWidgetItem(str(item.get("xRange", 0))))
             table.setItem(row, 4, QTableWidgetItem(str(item.get("yRange", 0))))
-            table.setItem(row, 5, QTableWidgetItem(str(item.get("delay", 0.0))))
+            table.setItem(row, 5, QTableWidgetItem(str(item.get("charging", 0.0))))
 
     def add_row(self, tab_name, category):
         self.save_button.setStyleSheet("background-color: red;")
@@ -130,7 +130,7 @@ class JsonEditor(QWidget):
                     "y": int(table.item(row, 2).text()) if table.item(row, 2) else 0,
                     "xRange": int(table.item(row, 3).text()) if table.item(row, 3) else 0,
                     "yRange": int(table.item(row, 4).text()) if table.item(row, 4) else 0,
-                    "delay": float(table.item(row, 5).text()) if table.item(row, 5) else 0.0,
+                    "charging": float(table.item(row, 5).text()) if table.item(row, 5) else 0.0,
                 }
                 data_to_save[category].append(item)
         with open(json_file, "w", encoding="utf-8") as f:

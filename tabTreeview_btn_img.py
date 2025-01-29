@@ -160,7 +160,7 @@ class TabTreeview_btn(QWidget):
       self.run_btn_cnt=0
     else:
       # {"버튼이름":[데이터],"character_list":[{"아이디1":핸들 값1,"아이디2":핸들 값2}]}
-      self.sio.emit('button_schedule', {"status_check_button":[],"character_list":{}}, to=sid)
+      self.sio.emit('button_schedule', {"status_check_button":[1,1,1,1,1],"character_list":{}}, to=sid)
       self.signal_generator.user_signal_start_animation.emit(clicked_button, button_name)  #(button_name="OFF")
 
   def checkStatusRun(self, checked):
@@ -180,6 +180,8 @@ class TabTreeview_btn(QWidget):
       self.status_check.setText("Status Check:ON")
       self.status_check.setStyleSheet("color:green")
       schedule.every(30).minutes.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag('chkStatusSchedule')
+      # schedule.every(30).seconds.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag('chkStatusSchedule')
+
     else:
       self.run_btn.setText("OFF")
       self.status_check.setText("Status Check:OFF")
@@ -232,7 +234,7 @@ class TabTreeview_btn(QWidget):
       button_list[button_name].append(buttons[i]["y"])
       button_list[button_name].append(buttons[i]["xRange"])
       button_list[button_name].append(buttons[i]["yRange"])
-      button_list[button_name].append(buttons[i]["delay"])
+      button_list[button_name].append(buttons[i]["charging"])
     
   def add_buttons(self):
     try:
