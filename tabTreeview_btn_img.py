@@ -98,6 +98,8 @@ class TabTreeview_btn(QWidget):
     #reset and Set Account buttons
     self.reset_button = QPushButton("reset")
     self.reset_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    self.reset_button.setShortcut("F1")
+    self.reset_button.setToolTip("단축키(F1)")
     self.reset_button.clicked.connect(self.reset_status_and_log)
     self.set_account=QPushButton("Set Account")
     self.set_account.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -148,19 +150,13 @@ class TabTreeview_btn(QWidget):
   
   def setup_character_list(self, character_list):
     self.character_list=character_list
-  def set_schedule_chkStatus(self, clicked_button, button_name, sid):
+  def set_schedule_chkStatus(self, clicked_button, button_name, decomposeItem_button, sid):
     self.run_btn_cnt+=1
     self.last_clicked_button[button_name]=clicked_button
+    button=decomposeItem_button
 
     if self.run_btn_cnt%3==0:
-      buttons_dict = {
-        **self.dungeon_buttons,
-        **self.routine_buttons,
-        **self.setting_buttons,
-      }
-      button = buttons_dict.get("아이템분해")[0] #아이템분해 버튼 객체
       self.signal_generator.user_signal_send_to_command.emit(button, "아이템분해",1)
-      # self.send_to_command(button, "아이템분해")
       self.run_btn_cnt=0
     else:
       # {"버튼이름":[데이터],"character_list":[{"아이디1":핸들 값1,"아이디2":핸들 값2}]}
@@ -171,12 +167,19 @@ class TabTreeview_btn(QWidget):
     clicked_button=self.sender()
     button_name="status_check_button"
 
+    buttons_dict = {
+        **self.dungeon_buttons,
+        **self.routine_buttons,
+        **self.setting_buttons,
+      }
+    decomposeItem_button = buttons_dict.get("아이템분해")[0] #아이템분해 버튼 객체
+
     sid=self.pcList[self.tab_name]
     if checked:
       self.run_btn.setText("ON")
       self.status_check.setText("Status Check:ON")
       self.status_check.setStyleSheet("color:green")
-      schedule.every(30).minutes.do(self.set_schedule_chkStatus, clicked_button, button_name, sid).tag('chkStatusSchedule')
+      schedule.every(30).minutes.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag('chkStatusSchedule')
     else:
       self.run_btn.setText("OFF")
       self.status_check.setText("Status Check:OFF")

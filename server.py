@@ -76,7 +76,7 @@ class WebSocketServer:
   def handle_ping(self, sid, data):
     print(f"Received ping from {sid}: {data['time']}")
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    self.sio.emit('pong', {"message": f"{current_time}"}, to=sid)
+    self.sio.emit('pong', {"time": f"{current_time}"}, to=sid)
   
   #set up 버튼으로 캐릭터리스트를 갱신함
   def revAccount(self, sid, data):
