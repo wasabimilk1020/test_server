@@ -222,9 +222,7 @@ class TabTreeview_btn(QWidget):
 
       #버튼 클릭 시 동작
       button.clicked.connect(self.send_to_command)
-      # button.clicked.connect(lambda _, btn=button, btn_name=button_name: self.start_animation(btn, btn_name))
-      
-
+  
       # GridLayout에 버튼을 다시 배치
       for index, (key,value) in enumerate(button_list.items()):
           row = index // 6  # 행 계산
@@ -256,8 +254,10 @@ class TabTreeview_btn(QWidget):
     except json.JSONDecodeError:
       print(f"Error decoding JSON file")
   
-  def generate_button_data(self, button_name,button_dict_map,selected_characters,button):
+  def generate_button_data(self, button_name,button_dict_map):
     emit_data={}
+    selected_characters={}
+    print("버튼일름: ",button_name)
     buttonFromJson=self.buttonsFromJson # {"그룹이름":[{버튼속성},{버튼속성}]}
     
     #버튼 데이터
@@ -265,7 +265,8 @@ class TabTreeview_btn(QWidget):
       if groupBox_name in buttonFromJson:
         data_list = button_dict.get(button_name)
         if data_list:
-          data_list = data_list[1:]  # 첫 번째 요소 제외
+          btn_widget=data_list[0]  #버튼 위젯
+          data_list = data_list[1:]  # 첫 번째 요소 제외 (버튼 위젯 제외)
           break
     emit_data[button_name]=data_list
     
@@ -279,22 +280,18 @@ class TabTreeview_btn(QWidget):
       emit_data["character_list"]=selected_characters
     
       #emit_data={"버튼이름":[데이터],"character_list":{"아이디1":핸들 값1,"아이디2":핸들 값2}}
-      return emit_data
+      print("emit_data: ",emit_data,"btn_widget: ",btn_widget)
+      return emit_data, btn_widget
     else:
-      return None
+      print("어카운트 접속하지 않음")
+      
     
   #왼쪽 버튼 클릭 시 이벤트 핸들러  
   def send_to_command(self, button=None, title=None, flag=None):
     if flag is not None:
-      clicked_button=button
       button_name=title    
     else:
-      clicked_button=self.sender()
-      button_name=clicked_button.text()
-   
-    data_list=[]
-    selected_characters={}
-    character_list=[]
+      button_name=self.sender().text()
     
     # 그룹 이름과 관련된 버튼 데이터를 매핑
     button_dict_map = {
@@ -302,15 +299,17 @@ class TabTreeview_btn(QWidget):
       "루틴": self.routine_buttons,
       "세팅": self.setting_buttons,
     }
-    self.last_clicked_button[button_name]=clicked_button
-    emit_data=self.generate_button_data(button_name,button_dict_map,selected_characters,clicked_button)
+    
+    emit_data, button_widget=self.generate_button_data(button_name,button_dict_map)
+    print("button_widget: ",button_widget)
+    self.last_clicked_button[button_name]=button_widget
     
     if emit_data is not None:
       if self.pcList is not None and self.sio is not None:
         sid=self.pcList[self.tab_name]
         #emit_data={"버튼이름":[데이터],"character_list":[{"아이디1":핸들 값1,"아이디2":핸들 값2}]}
         self.sio.emit('button_schedule', emit_data, to=sid)
-        self.start_animation(clicked_button, button_name) #애니메이션 추가
+        self.start_animation(button_widget, button_name) #애니메이션 추가
       else:
         print("set account 필요함")
 
@@ -338,34 +337,6 @@ class TabTreeview_btn(QWidget):
     animation.start()
    
     self.animations[button_name] = animation # 애니메이션 저장
-    
-
-# #---이미지 섹션
-#   # def image_layout(self, character_name, time, image_path, gif_path): #일단 gif는 보류
-#   def image_layout(self, character_name, time, image_path):
-#     """
-#     클라이언트 데이터 기반으로 UI 생성
-#     :param character_name: 캐릭터 이름 (str)
-#     :param time: 시간 (str)
-#     :param image_path: 이미지 경로 (str) 서버에 이미지를 저장해야됨
-#     :param gif_path: GIF 경로 (str) 서버에 gif를 저장해야함
-#     """
-#     # 수직 레이아웃 생성
-#     image_vertical_box = QVBoxLayout()
-#     # 캐릭터 이름 QLabel
-#     name_label = QLabel(character_name)
-#     image_vertical_box.addWidget(name_label)
-#     # 시간 QLabel
-#     time_label = QLabel(time)
-#     image_vertical_box.addWidget(time_label)
-#     # 이미지 뷰어
-#     image_viewer = ImageViewer(image_path)
-#     image_vertical_box.addWidget(image_viewer)
-#     # # GIF 뷰어
-#     # gif_viewer = GifViewer(gif_path)
-#     # image_vertical_box.addWidget(gif_viewer)
-#     # 메인 레이아웃에 수직 레이아웃 추가
-#     self.image_main_layout.addLayout(image_vertical_box)
     
   #트리뷰 Status and Log 초기화 핸들러
   def reset_status_and_log(self):
