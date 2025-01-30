@@ -4,7 +4,7 @@ import random
 import schedule
 
 class SignalGenerator(QObject):
-  user_signal_schedule_send_to_command = pyqtSignal(object, object)
+  user_signal_schedule_send_to_command = pyqtSignal(object, object, object)
   
 class ScheduleTable(QWidget):
   def __init__(self,tab_tree_view):
@@ -48,7 +48,7 @@ class ScheduleTable(QWidget):
   def set_schedule_with_button(self, header_title):
     button = self.scheduled_buttons.get(header_title)
     if button:
-      self.signal_generator.user_signal_schedule_send_to_command.emit(button, header_title)
+      self.signal_generator.user_signal_schedule_send_to_command.emit(button, header_title,1)
 
   # 스케줄 설정 함수
   def setup_schedule(self, schedule_time, table_headers):
