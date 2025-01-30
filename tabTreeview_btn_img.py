@@ -56,18 +56,17 @@ def load_json(json_file,tab_name):
   
 #---이 파일의 메인 클래스
 class TabTreeview_btn(QWidget):
-  def __init__(self,tab_name,rowId, tab_widget, tab_contents, show_context_menu):
+  def __init__(self,tab_name, tab_widget, tab_contents, show_context_menu):
     super().__init__()
     self.tab_name=tab_name
     self.sio=None
     self.pcList=None
-    self.rowId=rowId
     self.tab_widget=tab_widget
     self.tab_contents=tab_contents
     self.show_context_menu=show_context_menu
     self.last_clicked_button={}
-    # self.character_list=load_json(f"./json_files/character_list/{tab_name}.json", tab_name)
     self.character_list=None
+    self.rowId={}
     self.run_btn_cnt=0
     self.signal_generator = SignalGenerator()
     self.signal_generator.user_signal_start_animation.connect(self.start_animation)
@@ -148,8 +147,10 @@ class TabTreeview_btn(QWidget):
     self.pcList=pcList
     self.sio=sio
   
-  def setup_character_list(self, character_list):
+  def setup_character_list_and_rowId(self, character_list, rowid):
     self.character_list=character_list
+    self.rowId=rowid
+
   def set_schedule_chkStatus(self, clicked_button, button_name, decomposeItem_button, sid):
     self.run_btn_cnt+=1
     self.last_clicked_button[button_name]=clicked_button
@@ -268,18 +269,20 @@ class TabTreeview_btn(QWidget):
           break
     emit_data[button_name]=data_list
     
-    #수행할 캐릭터 데이터
-    for name,rowid in self.rowId.items():
-      check_state=rowid.checkState(0) #컬럼 0을 가리킴 즉, 체크박스 상태
-      if check_state== Qt.Checked:  #체크 된 아이디만 실행
-        handle=self.character_list[name]
-        selected_characters[name]=handle
-        # self.last_clicked_button[button_name]=button
-    emit_data["character_list"]=selected_characters
+    if self.rowId !={}:
+      for name,rowid in self.rowId.items():  #수행할 캐릭터 데이터
+        check_state=rowid.checkState(0) #컬럼 0을 가리킴 즉, 체크박스 상태
+        if check_state== Qt.Checked:  #체크 된 아이디만 실행
+          handle=self.character_list[name]
+          selected_characters[name]=handle
+          # self.last_clicked_button[button_name]=button
+      emit_data["character_list"]=selected_characters
     
-    #emit_data={"버튼이름":[데이터],"character_list":{"아이디1":핸들 값1,"아이디2":핸들 값2}}
-    return emit_data
-
+      #emit_data={"버튼이름":[데이터],"character_list":{"아이디1":핸들 값1,"아이디2":핸들 값2}}
+      return emit_data
+    else:
+      return None
+    
   #왼쪽 버튼 클릭 시 이벤트 핸들러  
   def send_to_command(self, button=None, title=None, flag=None):
     if flag is not None:
@@ -302,13 +305,14 @@ class TabTreeview_btn(QWidget):
     self.last_clicked_button[button_name]=clicked_button
     emit_data=self.generate_button_data(button_name,button_dict_map,selected_characters,clicked_button)
     
-    if self.pcList is not None and self.sio is not None:
-      sid=self.pcList[self.tab_name]
-      #emit_data={"버튼이름":[데이터],"character_list":[{"아이디1":핸들 값1,"아이디2":핸들 값2}]}
-      self.sio.emit('button_schedule', emit_data, to=sid)
-      self.start_animation(clicked_button, button_name) #애니메이션 추가
-    else:
-      print("set account 필요함")
+    if emit_data is not None:
+      if self.pcList is not None and self.sio is not None:
+        sid=self.pcList[self.tab_name]
+        #emit_data={"버튼이름":[데이터],"character_list":[{"아이디1":핸들 값1,"아이디2":핸들 값2}]}
+        self.sio.emit('button_schedule', emit_data, to=sid)
+        self.start_animation(clicked_button, button_name) #애니메이션 추가
+      else:
+        print("set account 필요함")
 
 #---버튼 애니메이션 기능
   def update_button_color(self, color,button):

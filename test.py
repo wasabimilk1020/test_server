@@ -1,2 +1,4 @@
-dict={"kim":1,"d":2}
-print(len(dict))
+dict={}
+for i, j in dict.items():
+  print(i)
+  print(j)

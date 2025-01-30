@@ -69,7 +69,7 @@ class Tab(QWidget):
         self.left_tab_layout.addWidget(self.sum_label)
 
         # 버튼 및 이미지 레이아웃
-        self.tabTreeview_btn_img = TabTreeview_btn(self.tab_name,self.rowId, self.tab_container, self.tab_contents, self.show_context_menu)
+        self.tabTreeview_btn_img = TabTreeview_btn(self.tab_name, self.tab_container, self.tab_contents, self.show_context_menu)
         self.json_editor = JsonEditor(self.tab_name, self.tab_container, self.tabTreeview_btn_img)
 
         self.left_tab_layout.addWidget(self.tabTreeview_btn_img)
@@ -99,16 +99,6 @@ class Tab(QWidget):
             child_item = self.tree_widget.topLevelItem(i)
             child_item.setCheckState(0, state)
 
-    # def update_sum(self):
-    #   """다이아 컬럼의 숫자 합계 업데이트"""
-    #   total = 0
-    #   for i in range(1, self.tree_widget.topLevelItemCount()):
-    #     item = self.tree_widget.topLevelItem(i)
-    #     try:
-    #       total += int(item.text(4))
-    #     except ValueError:
-    #       pass  # 숫자가 아니면 무시
-    #   self.sum_label.setText(f"다이아 합계: {total}")
   
 class TabTreeview(QWidget):
   def __init__(self):
@@ -147,7 +137,6 @@ class TabTreeview(QWidget):
         self.tab_contents[PC_id].rowId[id].addChild(QTreeWidgetItem(self.tab_contents[PC_id].rowId[id],["","",time,log]))  
         # 특정 탭 이름만 빨간색으로 변경
         tab_index = self.tab_container.indexOf(self.tab_contents[PC_id])  # 현재 탭의 인덱스 가져오기
-        print("tab_index",tab_index)
         if tab_index != -1:  # 유효한 인덱스라면
           self.tab_container.tabBar().setTabTextColor(tab_index, QColor("red"))
         # self.tab_contents[PC_id].tabTreeview_btn_img.complete_task(self.tab_contents[PC_id].tabTreeview_btn_img.last_clicked_button.pop(0))
@@ -169,8 +158,7 @@ class TabTreeview(QWidget):
     # name_list=self.character_list.keys()  #{"아이디":핸들 값}
     character_list=load_json(f"./json_files/character_list/{PC_id}.json", PC_id)
     self.name_list=character_list.keys()
-    self.tab_contents[PC_id].tabTreeview_btn_img.setup_character_list(character_list)
-    
+
     if self.name_list==[]:  # 빈 딕셔너리일 경우
       print("name_list가 비어 있음")
     else:
@@ -185,12 +173,8 @@ class TabTreeview(QWidget):
         self.tab_contents[PC_id].rowId[name].setFlags(self.tab_contents[PC_id].rowId[name].flags() | Qt.ItemIsUserCheckable)
         self.tab_contents[PC_id].rowId[name].setCheckState(0, Qt.Checked)
         self.tab_contents[PC_id].tree_widget.addTopLevelItem(self.tab_contents[PC_id].rowId[name])
-      #   #컬럼 테스트용 데이터
-      #   self.tab_contents[PC_id].rowId[name].setText(2,"아이템")
-      #   self.tab_contents[PC_id].rowId[name].setText(3,"무야호")
-      #   self.tab_contents[PC_id].rowId[name].setText(4,"220")
-      # # 합계 업데이트
-      # self.tab_contents[PC_id].update_sum()
+
+    self.tab_contents[PC_id].tabTreeview_btn_img.setup_character_list_and_rowId(character_list,self.tab_contents[PC_id].rowId)
   
   def client_status_label(self, status, PC_id):
     self.tab_contents[PC_id].tabTreeview_btn_img.client_status.setText(status)
@@ -207,7 +191,6 @@ class TabTreeview(QWidget):
     if not clicked_button:  # 버튼이 없으면 종료 (버튼이 없을 일이 있나? 뭐지 이거)
       return
     
-    print("컨텍스트메뉴객체: ",clicked_button)
     # QMenu 생성
     menu = QMenu(self)
     # 메뉴 항목 추가

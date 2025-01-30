@@ -6,7 +6,7 @@
             "y": 375,
             "xRange": 10,
             "yRange": 10,
-            "charging": 1
+            "charging": 0
         },
         {
             "name": "격전의섬",
@@ -26,35 +26,35 @@
         },
         {
             "name": "크루마탑",
-            "x": 77,
-            "y": 25,
-            "xRange": 40,
-            "yRange": 40,
-            "charging": 1
+            "x": 1141,
+            "y": 565,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
         },
         {
             "name": "상아탑",
-            "x": 44,
+            "x": 1141,
             "y": 21,
-            "xRange": 2,
-            "yRange": 2,
-            "charging": 1
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
         },
         {
             "name": "안타라스",
-            "x": 0,
+            "x": 1141,
             "y": 0,
             "xRange": 0,
             "yRange": 0,
-            "charging": 1
+            "charging": 0
         },
         {
             "name": "이벤트던전",
-            "x": 0,
+            "x": 1141,
             "y": 0,
             "xRange": 0,
             "yRange": 0,
-            "charging": 1
+            "charging": 0
         }
     ],
     "루틴": [

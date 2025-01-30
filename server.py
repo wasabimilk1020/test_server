@@ -60,7 +60,7 @@ class WebSocketServer:
     window.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.setup_data(self.pcList, self.sio)  #버튼 클래스 pcList setup
     window.send_to_image.setup_data(self.sio)
    
-    print(f"connect{computer_id} 클라이언트", sid)
+    print(f"connect {computer_id} 클라이언트", sid)
 
   #어떤 컴퓨터의 요청인지 sid로 구분
   def get_computer_id(self,sid):
