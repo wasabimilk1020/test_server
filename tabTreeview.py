@@ -241,7 +241,11 @@ class TabTreeview(QWidget):
     # 수직 레이아웃 생성
     image_vertical_box = QVBoxLayout()
 
-    if len(self.image_widgets) <len(self.name_list): 
+    if character_name in self.image_widgets:
+      self.image_widgets[character_name][0].setText(character_name)
+      self.image_widgets[character_name][1].setText(time)
+      self.image_widgets[character_name][2].set_pixmap()
+    else: 
       self.image_widgets[character_name]=[]
       # 캐릭터 이름 QLabel
       name_label = QLabel(character_name)      
@@ -259,10 +263,7 @@ class TabTreeview(QWidget):
       image_vertical_box.addWidget(image_viewer)
       self.image_widgets[character_name].append(image_viewer)
       self.tab_contents[computer_id].tabTreeview_btn_img.image_main_layout.addLayout(image_vertical_box)
-    else:
-      self.image_widgets[character_name][0].setText(character_name)
-      self.image_widgets[character_name][1].setText(time)
-      self.image_widgets[character_name][2].set_pixmap()
+   
   
   def diamond_update_sum(self, data, computer_id, name):
     """다이아 컬럼의 숫자 합계 업데이트"""

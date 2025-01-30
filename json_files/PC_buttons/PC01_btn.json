@@ -14,7 +14,7 @@
             "y": 375,
             "xRange": 10,
             "yRange": 10,
-            "charging": 1
+            "charging": 2
         },
         {
             "name": "파괴된성채",
@@ -64,7 +64,7 @@
             "y": 10,
             "xRange": 30,
             "yRange": 30,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "우편",
@@ -72,7 +72,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "시즌패스",
@@ -80,7 +80,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "아이템분해",
@@ -88,7 +88,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "스킬북분해",
@@ -96,7 +96,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "아이템삭제",
@@ -104,7 +104,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "일괄사용",
@@ -112,7 +112,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "사망체크",
@@ -120,7 +120,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "이벤트상점",
@@ -128,7 +128,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "아가시온",
@@ -136,7 +136,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "신탁서",
@@ -144,7 +144,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         }
     ],
     "세팅": [
@@ -154,7 +154,7 @@
             "y": 200,
             "xRange": 80,
             "yRange": 80,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "고급",
@@ -162,7 +162,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "희귀",
@@ -170,7 +170,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "40M",
@@ -178,7 +178,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "제한없음",
@@ -186,7 +186,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "바람",
@@ -194,7 +194,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "불",
@@ -202,7 +202,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "물",
@@ -210,7 +210,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "게임실행",
@@ -218,7 +218,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         },
         {
             "name": "다이아",
@@ -226,7 +226,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0.0
+            "charging": 0
         }
     ]
 }

@@ -4,7 +4,7 @@ import random
 import schedule
 
 class SignalGenerator(QObject):
-  user_signal_schedule_send_to_command = pyqtSignal(object,object, object)
+  user_signal_schedule_send_to_command = pyqtSignal(object, object)
   
 class ScheduleTable(QWidget):
   def __init__(self,tab_tree_view):
@@ -20,7 +20,8 @@ class ScheduleTable(QWidget):
     # 테이블 헤더 설정
     self.table_titles = [
         ["모닝","오전 우편", "오후 우편", "저녁 우편", "밤 우편"],
-        ["파괴된성채", "크루마탑", "안타라스","시즌패스", "격전의섬"]
+        ["파괴된성채","격전의섬"]
+        # ["파괴된성채", "크루마탑", "안타라스","시즌패스", "격전의섬"]
     ]
     
     # 메인 레이아웃
@@ -80,7 +81,8 @@ class ScheduleTable(QWidget):
     
     hours_list=[
       ["09","10","14","18","22"],
-      ["13","15","16","21","23"] #파괴, 크루마, 안타, 시즌패스, 격섬
+      ["13", "21"] #파괴, 격섬
+      # ["13","15","16","21","23"] #파괴, 크루마, 안타, 시즌패스, 격섬
     ]
 
     for idx, table in enumerate(self.tables):

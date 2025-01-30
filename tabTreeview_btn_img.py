@@ -180,7 +180,7 @@ class TabTreeview_btn(QWidget):
       self.status_check.setText("Status Check:ON")
       self.status_check.setStyleSheet("color:green")
       schedule.every(30).minutes.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag('chkStatusSchedule')
-      # schedule.every(30).seconds.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag('chkStatusSchedule')
+      # schedule.every(20).seconds.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag('chkStatusSchedule')
 
     else:
       self.run_btn.setText("OFF")
