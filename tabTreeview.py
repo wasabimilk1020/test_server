@@ -122,7 +122,7 @@ class TabTreeview(QWidget):
     # self.tab_contents[PC_id].tabTreeview_btn_img.setup_character_list(character_list)  #버튼 클래스 초기화
 
   def add_tabs(self, tab_container):
-    for i in range(1, 8):
+    for i in range(1, 11):
       tab_name = f"PC{i:02d}"
       tab = Tab(tab_name, tab_container, self.tab_contents, self.show_context_menu)
       tab_container.addTab(tab, tab_name)

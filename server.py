@@ -9,6 +9,7 @@ import sys
 from gui_main import MainWindow
 import json
 import base64
+import os
 
 class SignalGenerator(QObject):
   user_signal_log = pyqtSignal(object, object, object, object, object)
@@ -85,11 +86,14 @@ class WebSocketServer:
     
     try:
       with open(f"./json_files/character_list/{computer_id}.json", "w", encoding="utf-8") as json_file:
-        json.dump(character_list, json_file, ensure_ascii=False)
+        json.dump(character_list, json_file, indent=4, ensure_ascii=False)
+        json_file.flush()  # OS 버퍼에 있는 내용을 즉시 디스크에 반영
+        os.fsync(json_file.fileno())  # 디스크 기록 완료 보장
+      self.signal_generator.user_signal_treeview.emit(computer_id)
     except Exception as e:
       print(f"Error saving JSON file for {computer_id}: {e}")  
 
-    self.signal_generator.user_signal_treeview.emit(computer_id)
+    # self.signal_generator.user_signal_treeview.emit(computer_id)
     
   def logEvent(self, sid, data):
     #[log_message, id, flag]
