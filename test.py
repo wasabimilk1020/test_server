@@ -1,4 +1,4 @@
-dict={}
-for i, j in dict.items():
-  print(i)
-  print(j)
+dict={"kim":"eunsu"}
+print(dict)
+dict["kim"]="은수"
+print(dict)

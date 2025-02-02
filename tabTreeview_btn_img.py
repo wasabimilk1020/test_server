@@ -150,6 +150,7 @@ class TabTreeview_btn(QWidget):
   def setup_character_list_and_rowId(self, character_list, rowid):
     self.character_list=character_list
     self.rowId=rowid
+    # print("버튼클래스 row id 세팅: ",self.rowId)
 
   def set_schedule_chkStatus(self, clicked_button, button_name, decomposeItem_button, sid):
     self.run_btn_cnt+=1
@@ -257,9 +258,9 @@ class TabTreeview_btn(QWidget):
   def generate_button_data(self, button_name,button_dict_map):
     emit_data={}
     selected_characters={}
-    print("버튼일름: ",button_name)
+    print("버튼이름: ",button_name)
     buttonFromJson=self.buttonsFromJson # {"그룹이름":[{버튼속성},{버튼속성}]}
-    
+    # print("버튼 생성시: ",self.rowId)
     #버튼 데이터
     for groupBox_name, button_dict in button_dict_map.items():
       if groupBox_name in buttonFromJson:

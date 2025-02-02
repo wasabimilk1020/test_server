@@ -129,6 +129,8 @@ class TabTreeview(QWidget):
       self.tab_contents[tab_name] = tab
   
   def addLog(self, log, id, time, flag, PC_id):
+    # print("addLog row id: ", self.tab_contents[PC_id].rowId)
+
     #플래그가 0이면 에러 1이면 상태 메세지로 처리하자
     if flag==0:
       if(id in self.tab_contents[PC_id].rowId):  
@@ -151,13 +153,18 @@ class TabTreeview(QWidget):
       else:
         print("없는 아이디")
   
-  def tree_clear(self, PC_id):
-    self.tab_contents[PC_id].tree_widget.clear()
+  # def tree_clear(self, PC_id):
+  #   self.tab_contents[PC_id].tree_widget.clear()
+  #   # print("tree clear 실행")
 
   def populate_data(self, PC_id):
-    # name_list=self.character_list.keys()  #{"아이디":핸들 값}
+    # character_list={"아이디":핸들 값}
     character_list=load_json(f"./json_files/character_list/{PC_id}.json", PC_id)
     self.name_list=character_list.keys()
+
+    # 기존 rowId 데이터를 모두 제거
+    self.tab_contents[PC_id].rowId.clear()
+    self.tab_contents[PC_id].tree_widget.clear()  
 
     if self.name_list==[]:  # 빈 딕셔너리일 경우
       print("name_list가 비어 있음")
@@ -173,7 +180,7 @@ class TabTreeview(QWidget):
         self.tab_contents[PC_id].rowId[name].setFlags(self.tab_contents[PC_id].rowId[name].flags() | Qt.ItemIsUserCheckable)
         self.tab_contents[PC_id].rowId[name].setCheckState(0, Qt.Checked)
         self.tab_contents[PC_id].tree_widget.addTopLevelItem(self.tab_contents[PC_id].rowId[name])
-
+    # print("new row id: ", self.tab_contents[PC_id].rowId)
     self.tab_contents[PC_id].tabTreeview_btn_img.setup_character_list_and_rowId(character_list,self.tab_contents[PC_id].rowId)
   
   def client_status_label(self, status, PC_id):

@@ -10,10 +10,14 @@ from gui_main import MainWindow
 import json
 import base64
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s") # 로깅 설정
+
 
 class SignalGenerator(QObject):
   user_signal_log = pyqtSignal(object, object, object, object, object)
-  user_signal_treeview = pyqtSignal(object)
+  user_signal_treeview_populate = pyqtSignal(object)
   user_signal_client_status_label = pyqtSignal(object,object)
   user_signal_stop_animation = pyqtSignal(object,object)
   user_signal_captured_img = pyqtSignal(object,object,object,object)
@@ -32,8 +36,8 @@ class WebSocketServer:
     self.greenlet=None  #greenlet 저장용
     self.window=window
     self.signal_generator = SignalGenerator()  # SignalGenerator를 속성으로 생성
-    self.signal_generator.user_signal_treeview.connect(window.tab_tree_view.tree_clear) 
-    self.signal_generator.user_signal_treeview.connect(window.tab_tree_view.populate_data)
+    # self.signal_generator.user_signal_treeview.connect(window.tab_tree_view.tree_clear) 
+    self.signal_generator.user_signal_treeview_populate.connect(window.tab_tree_view.populate_data)
     self.signal_generator.user_signal_log.connect(window.tab_tree_view.addLog)
     self.signal_generator.user_signal_client_status_label.connect(window.tab_tree_view.client_status_label)
     self.signal_generator.user_signal_stop_animation.connect(window.tab_tree_view.stop_animation)
@@ -56,7 +60,7 @@ class WebSocketServer:
     computer_id = query_params["computer_id"][0]  # "PC01"
     self.pcList[computer_id] = sid  #클라이언트 리스트 생성
 
-    self.signal_generator.user_signal_treeview.emit(computer_id)  #어카운트 세팅
+    self.signal_generator.user_signal_treeview_populate.emit(computer_id)  #어카운트 세팅
     self.signal_generator.user_signal_client_status_label.emit("Client Status:ON",computer_id)
     window.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.setup_data(self.pcList, self.sio)  #버튼 클래스 pcList setup
     window.send_to_image.setup_data(self.sio)
@@ -75,7 +79,7 @@ class WebSocketServer:
     self.signal_generator.user_signal_client_status_label.emit("Client Status:OFF",computer_id)
 
   def handle_ping(self, sid, data):
-    print(f"Received ping from {sid}: {data['time']}")
+    logging.info(f"Received ping from {sid}: {data['time']}")
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     self.sio.emit('pong', {"time": f"{current_time}"}, to=sid)
   
@@ -89,7 +93,7 @@ class WebSocketServer:
         json.dump(character_list, json_file, indent=4, ensure_ascii=False)
         json_file.flush()  # OS 버퍼에 있는 내용을 즉시 디스크에 반영
         os.fsync(json_file.fileno())  # 디스크 기록 완료 보장
-      self.signal_generator.user_signal_treeview.emit(computer_id)
+      self.signal_generator.user_signal_treeview_populate.emit(computer_id)
     except Exception as e:
       print(f"Error saving JSON file for {computer_id}: {e}")  
 
