@@ -35,8 +35,7 @@ class WebSocketServer:
     self.cleanup_lock=lock.Semaphore()
     self.greenlet=None  #greenlet 저장용
     self.window=window
-    self.signal_generator = SignalGenerator()  # SignalGenerator를 속성으로 생성
-    # self.signal_generator.user_signal_treeview.connect(window.tab_tree_view.tree_clear) 
+    self.signal_generator = SignalGenerator()  # SignalGenerator를 속성으로 생성 
     self.signal_generator.user_signal_treeview_populate.connect(window.tab_tree_view.populate_data)
     self.signal_generator.user_signal_log.connect(window.tab_tree_view.addLog)
     self.signal_generator.user_signal_client_status_label.connect(window.tab_tree_view.client_status_label)
@@ -79,7 +78,7 @@ class WebSocketServer:
     self.signal_generator.user_signal_client_status_label.emit("Client Status:OFF",computer_id)
 
   def handle_ping(self, sid, data):
-    logging.info(f"Received ping from {sid}: {data['time']}")
+    # logging.info(f"Received ping from {sid}: {data['time']}")
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     self.sio.emit('pong', {"time": f"{current_time}"}, to=sid)
   

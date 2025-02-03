@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout,QHBoxLayout, QPushButton, QLabel,QMainWindow,QGroupBox,QLineEdit,QGridLayout,QSpinBox,QSizePolicy, QMessageBox
-from PyQt5.QtGui import QPixmap,QMovie,QColor,QStandardItemModel
+from PyQt5.QtGui import QPixmap,QMovie,QColor,QStandardItemModel,QIcon
 import sys,json
 from PyQt5.QtCore import Qt,QVariantAnimation, QTimer,QObject,pyqtSignal
 import schedule
@@ -8,6 +8,7 @@ import  time
 class SignalGenerator(QObject):
   user_signal_send_to_command= pyqtSignal(object,object,object)
   user_signal_start_animation = pyqtSignal(object,object)
+  user_signal_setText_time_for_statusChk = pyqtSignal(object,object)
 
 # class ImageViewer(QLabel):
 #   def __init__(self, image_path):
@@ -67,10 +68,12 @@ class TabTreeview_btn(QWidget):
     self.last_clicked_button={}
     self.character_list=None
     self.rowId={}
+    self.header_item=None
     self.run_btn_cnt=0
     self.signal_generator = SignalGenerator()
     self.signal_generator.user_signal_start_animation.connect(self.start_animation)
     self.signal_generator.user_signal_send_to_command.connect(self.send_to_command)
+    self.signal_generator.user_signal_setText_time_for_statusChk.connect(self.setText_time_for_statusChk)
     
     #reset 및 client status 위젯 및 레이아웃 세팅
     self.client_status_layout = QVBoxLayout()
@@ -84,11 +87,12 @@ class TabTreeview_btn(QWidget):
     self.client_status_layout.addWidget(self.status_check)    
     
     self.run_btn = QPushButton("OFF")
+    self.run_btn.setContextMenuPolicy(Qt.CustomContextMenu) # 컨텍스트 메뉴 활성화 (우클릭 이벤트)
+    self.run_btn.customContextMenuRequested.connect(self.show_context_menu)
     self.run_btn.setFixedSize(100, 22)
     self.run_btn.setCheckable(True)
     self.run_btn.toggled.connect(self.checkStatusRun)
-
-
+  
     self.client_status_horizontal=QHBoxLayout()
     self.client_status_horizontal.setAlignment(Qt.AlignLeft)
     self.client_status_horizontal.addLayout(self.client_status_layout)
@@ -147,15 +151,26 @@ class TabTreeview_btn(QWidget):
     self.pcList=pcList
     self.sio=sio
   
-  def setup_character_list_and_rowId(self, character_list, rowid):
+  def setup_character_list_and_rowId(self, character_list, rowid, header_item):
     self.character_list=character_list
     self.rowId=rowid
+    self.header_item=header_item
     # print("버튼클래스 row id 세팅: ",self.rowId)
 
-  def set_schedule_chkStatus(self, clicked_button, button_name, decomposeItem_button, sid):
+  def setText_time_for_statusChk(self,row,message):
+    self.header_item.setText(row,message)
+    self.header_item.setTextAlignment(row,Qt.AlignHCenter)
+
+  def set_schedule_chkStatus(self, clicked_button, button_name, decomposeItem_button, sid, client_tag):
     self.run_btn_cnt+=1
     self.last_clicked_button[button_name]=clicked_button
     button=decomposeItem_button
+
+    job=schedule.get_jobs(client_tag)
+    self.signal_generator.user_signal_setText_time_for_statusChk.emit(2,"statusChk time:")
+    self.signal_generator.user_signal_setText_time_for_statusChk.emit(3,job[0].next_run.strftime('%Y-%m-%d %H:%M:%S'))
+
+    # self.header_item.setText(2,job[0].next_run.strftime('%Y-%m-%d %H:%M:%S'))
 
     if self.run_btn_cnt%3==0:
       self.signal_generator.user_signal_send_to_command.emit(button, "아이템분해",1)
@@ -166,8 +181,11 @@ class TabTreeview_btn(QWidget):
       self.signal_generator.user_signal_start_animation.emit(clicked_button, button_name)  #(button_name="OFF")
 
   def checkStatusRun(self, checked):
-    clicked_button=self.sender()
+    # clicked_button=self.sender()
+    clicked_button=self.run_btn
     button_name="status_check_button"
+    client_tag= f"chkStatusSchedule_{self.tab_name}"
+    tab_index = self.tab_widget.indexOf(self.tab_contents[self.tab_name])  # 현재 탭의 인덱스 가져오기
 
     buttons_dict = {
         **self.dungeon_buttons,
@@ -181,14 +199,23 @@ class TabTreeview_btn(QWidget):
       self.run_btn.setText("ON")
       self.status_check.setText("Status Check:ON")
       self.status_check.setStyleSheet("color:green")
-      schedule.every(30).minutes.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag('chkStatusSchedule')
-      # schedule.every(20).seconds.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag('chkStatusSchedule')
-
+      if tab_index != -1:  # 유효한 인덱스라면
+        self.tab_widget.setTabText(tab_index, f"✅ {self.tab_name}")
+      schedule.clear(client_tag)
+      schedule.every(30).minutes.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid, client_tag).tag(client_tag)
+      # schedule.every(20).seconds.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag(client_tag)
+      job=schedule.get_jobs(client_tag)
+      self.setText_time_for_statusChk(2,"statusChk time:")
+      self.setText_time_for_statusChk(3,job[0].next_run.strftime('%Y-%m-%d %H:%M:%S'))
     else:
       self.run_btn.setText("OFF")
       self.status_check.setText("Status Check:OFF")
       self.status_check.setStyleSheet("color:red")
-      schedule.clear(tag='chkStatusSchedule')
+      if tab_index != -1:  # 유효한 인덱스라면
+        self.tab_widget.setTabText(tab_index, f"❌ {self.tab_name}")
+      schedule.clear(client_tag)
+      self.setText_time_for_statusChk(2,"")
+      self.setText_time_for_statusChk(3,"")
 
   def create_button(self, grid_layout, button_list, buttons):
     #buttons=[{버튼속성},{버튼속성}]
@@ -349,7 +376,7 @@ class TabTreeview_btn(QWidget):
       tab_index = self.tab_widget.indexOf(self.tab_contents[self.tab_name])  # 현재 탭의 인덱스 가져오기
       row_id.setCheckState(0,Qt.Checked)
       if tab_index != -1:  # 유효한 인덱스라면
-          self.tab_widget.tabBar().setTabTextColor(tab_index, QColor("black"))
+        self.tab_widget.tabBar().setTabTextColor(tab_index, QColor("black"))
   
   def set_account_fct(self):
     pc_name=self.tab_name

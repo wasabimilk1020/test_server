@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QTabWidget,QTabBar,QHeaderView,QMenu
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor,QPixmap
+from PyQt5.QtGui import QColor,QPixmap, QIcon
 from tabTreeview_btn_img import TabTreeview_btn
 from json_editor import JsonEditor
 import json
+import schedule
 
 def load_json(json_file, PC_id):
   """JSON 파일 로드."""
@@ -42,7 +43,7 @@ class Tab(QWidget):
         self.rowId={} #{"아이디":rowId}
         self.tab_contents=tab_contents
         self.show_context_menu=show_context_menu
-
+       
         # 레이아웃 설정
         self.tab_layout = QHBoxLayout()
         self.left_tab_layout = QVBoxLayout()
@@ -125,7 +126,7 @@ class TabTreeview(QWidget):
     for i in range(1, 11):
       tab_name = f"PC{i:02d}"
       tab = Tab(tab_name, tab_container, self.tab_contents, self.show_context_menu)
-      tab_container.addTab(tab, tab_name)
+      tab_container.addTab(tab, QIcon("./emoji/red_circle.png"), tab_name)
       self.tab_contents[tab_name] = tab
   
   def addLog(self, log, id, time, flag, PC_id):
@@ -141,7 +142,6 @@ class TabTreeview(QWidget):
         tab_index = self.tab_container.indexOf(self.tab_contents[PC_id])  # 현재 탭의 인덱스 가져오기
         if tab_index != -1:  # 유효한 인덱스라면
           self.tab_container.tabBar().setTabTextColor(tab_index, QColor("red"))
-        # self.tab_contents[PC_id].tabTreeview_btn_img.complete_task(self.tab_contents[PC_id].tabTreeview_btn_img.last_clicked_button.pop(0))
       else:
         print("없는 아이디")
     elif flag==1:
@@ -149,13 +149,8 @@ class TabTreeview(QWidget):
         self.tab_contents[PC_id].rowId[id].setText(2,time)
         self.tab_contents[PC_id].rowId[id].setText(3,log)
         self.tab_contents[PC_id].rowId[id].setTextAlignment(2,Qt.AlignHCenter)
-        # self.tab_contents[PC_id].tabTreeview_btn_img.complete_task(self.tab_contents[PC_id].tabTreeview_btn_img.last_clicked_button.pop(0))
       else:
         print("없는 아이디")
-  
-  # def tree_clear(self, PC_id):
-  #   self.tab_contents[PC_id].tree_widget.clear()
-  #   # print("tree clear 실행")
 
   def populate_data(self, PC_id):
     # character_list={"아이디":핸들 값}
@@ -180,15 +175,25 @@ class TabTreeview(QWidget):
         self.tab_contents[PC_id].rowId[name].setFlags(self.tab_contents[PC_id].rowId[name].flags() | Qt.ItemIsUserCheckable)
         self.tab_contents[PC_id].rowId[name].setCheckState(0, Qt.Checked)
         self.tab_contents[PC_id].tree_widget.addTopLevelItem(self.tab_contents[PC_id].rowId[name])
-    # print("new row id: ", self.tab_contents[PC_id].rowId)
-    self.tab_contents[PC_id].tabTreeview_btn_img.setup_character_list_and_rowId(character_list,self.tab_contents[PC_id].rowId)
+
+    tab_index = self.tab_container.indexOf(self.tab_contents[PC_id])  # 현재 탭의 인덱스 가져오기
+    if tab_index != -1:  # 유효한 인덱스라면
+      self.tab_container.tabBar().setTabTextColor(tab_index, QColor("black"))
+
+    self.tab_contents[PC_id].tabTreeview_btn_img.setup_character_list_and_rowId(character_list, self.tab_contents[PC_id].rowId, header_item)
   
   def client_status_label(self, status, PC_id):
     self.tab_contents[PC_id].tabTreeview_btn_img.client_status.setText(status)
+    tab_index = self.tab_container.indexOf(self.tab_contents[PC_id])  # 현재 탭의 인덱스 가져오기
+
     if status=="Client Status:ON":
       self.tab_contents[PC_id].tabTreeview_btn_img.client_status.setStyleSheet("color: green;")
+      if tab_index != -1:  # 유효한 인덱스라면
+        self.tab_container.setTabIcon(tab_index, QIcon("./emoji/green_circle.png"))
     else:
       self.tab_contents[PC_id].tabTreeview_btn_img.client_status.setStyleSheet("color: red;")
+      if tab_index != -1:  # 유효한 인덱스라면
+        self.tab_container.setTabIcon(tab_index, QIcon("./emoji/red_circle.png"))
   
   #---컨텍스트 메뉴 (버튼 오른쪽 클릭 메뉴 및 동작)
   def show_context_menu(self, position):
@@ -212,8 +217,13 @@ class TabTreeview(QWidget):
     # 선택된 항목 확인
     if action == action1:
       for computer_id in self.tab_contents.keys():
-        self.tab_contents[computer_id].tabTreeview_btn_img.send_to_command()   
-        # self.start_animation(clicked_button)  # 애니메이션 추가
+        if button_name == "OFF":
+          self.tab_contents[computer_id].tabTreeview_btn_img.checkStatusRun(True)
+        elif button_name =="ON":
+          self.tab_contents[computer_id].tabTreeview_btn_img.checkStatusRun(False)
+          schedule.clear(tag='chkStatusSchedule')
+        else:
+          self.tab_contents[computer_id].tabTreeview_btn_img.send_to_command()   
   
   def stop_animation(self,btn_name,computer_id):
     button_name=btn_name
