@@ -4,6 +4,7 @@ import sys,json
 from PyQt5.QtCore import Qt,QVariantAnimation, QTimer,QObject,pyqtSignal
 import schedule
 import  time
+from datetime import timedelta
 
 class SignalGenerator(QObject):
   user_signal_send_to_command= pyqtSignal(object,object,object)
@@ -161,21 +162,20 @@ class TabTreeview_btn(QWidget):
     self.header_item.setText(row,message)
     self.header_item.setTextAlignment(row,Qt.AlignHCenter)
 
-  def set_schedule_chkStatus(self, clicked_button, button_name, decomposeItem_button, sid, client_tag):
+  def set_schedule_chkStatus(self, clicked_button, button_name, decomposeItem_button, sid, client_tag, schedule_min):
     self.run_btn_cnt+=1
     self.last_clicked_button[button_name]=clicked_button
     button=decomposeItem_button
 
     job=schedule.get_jobs(client_tag)
-    self.signal_generator.user_signal_setText_time_for_statusChk.emit(2,"statusChk time:")
-    self.signal_generator.user_signal_setText_time_for_statusChk.emit(3,job[0].next_run.strftime('%Y-%m-%d %H:%M:%S'))
-
-    # self.header_item.setText(2,job[0].next_run.strftime('%Y-%m-%d %H:%M:%S'))
+    new_time = job[0].next_run + timedelta(minutes=schedule_min)
 
     if self.run_btn_cnt%3==0:
+      self.signal_generator.user_signal_setText_time_for_statusChk.emit(3, f"아이템분해: {new_time.strftime('%H:%M:%S')}")
       self.signal_generator.user_signal_send_to_command.emit(button, "아이템분해",1)
       self.run_btn_cnt=0
     else:
+      self.signal_generator.user_signal_setText_time_for_statusChk.emit(3, new_time.strftime('%H:%M:%S'))
       # {"버튼이름":[데이터],"character_list":[{"아이디1":핸들 값1,"아이디2":핸들 값2}]}
       self.sio.emit('button_schedule', {"status_check_button":[1,1,1,1,1],"character_list":{}}, to=sid)
       self.signal_generator.user_signal_start_animation.emit(clicked_button, button_name)  #(button_name="OFF")
@@ -186,6 +186,7 @@ class TabTreeview_btn(QWidget):
     button_name="status_check_button"
     client_tag= f"chkStatusSchedule_{self.tab_name}"
     tab_index = self.tab_widget.indexOf(self.tab_contents[self.tab_name])  # 현재 탭의 인덱스 가져오기
+    schedule_min=30
 
     buttons_dict = {
         **self.dungeon_buttons,
@@ -202,7 +203,7 @@ class TabTreeview_btn(QWidget):
       if tab_index != -1:  # 유효한 인덱스라면
         self.tab_widget.setTabText(tab_index, f"✅ {self.tab_name}")
       schedule.clear(client_tag)
-      schedule.every(30).minutes.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid, client_tag).tag(client_tag)
+      schedule.every(schedule_min).minutes.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid, client_tag, schedule_min).tag(client_tag)
       # schedule.every(20).seconds.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag(client_tag)
       job=schedule.get_jobs(client_tag)
       self.setText_time_for_statusChk(2,"statusChk time:")
