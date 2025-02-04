@@ -325,6 +325,17 @@ class TabTreeview_btn(QWidget):
     else:
       button_name=self.sender().text()
     
+    if button_name == "재시작":
+      sid=self.pcList[self.tab_name]
+      reply = QMessageBox.question(
+          self, "확인", "컴퓨터를 재시작하시겠습니까?", 
+          QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+      )
+
+      if reply == QMessageBox.Yes:
+          self.sio.emit('reboot_computer', {}, to=sid)  # 재시작 실행
+      return
+      
     # 그룹 이름과 관련된 버튼 데이터를 매핑
     button_dict_map = {
       "던전": self.dungeon_buttons,

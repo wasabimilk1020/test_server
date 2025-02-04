@@ -22,6 +22,8 @@ class SignalGenerator(QObject):
   user_signal_stop_animation = pyqtSignal(object,object)
   user_signal_captured_img = pyqtSignal(object,object,object,object)
   user_signal_diamond = pyqtSignal(object, object, object)
+  # user_signal_statusChk = pyqtSignal(object)
+
 
 class WebSocketServer:
   def __init__(self, host='127.0.0.1', port=4000, window=None):
@@ -42,6 +44,8 @@ class WebSocketServer:
     self.signal_generator.user_signal_stop_animation.connect(window.tab_tree_view.stop_animation)
     self.signal_generator.user_signal_captured_img.connect(window.tab_tree_view.image_layout)
     self.signal_generator.user_signal_diamond.connect(window.tab_tree_view.diamond_update_sum)
+    # self.signal_generator.user_signal_statusChk.connect(window.tab_tree_view.diamond_update_sum)
+
 
     # 이벤트 핸들러 등록
     self.sio.on('connect', self.connect)
@@ -76,6 +80,9 @@ class WebSocketServer:
     print("클라이언트 연결 끊김")
     computer_id=self.get_computer_id(sid)
     self.signal_generator.user_signal_client_status_label.emit("Client Status:OFF",computer_id)
+    # self.tab_contents[computer_id].tabTreeview_btn_img.checkStatusRun(False)
+    #여기서 checkStatusRun(False)를 해줘야 하는데 btn클래스 안에 있어서 호출을 못함 나중에 treeview로 뺴서하자
+   
 
   def handle_ping(self, sid, data):
     # logging.info(f"Received ping from {sid}: {data['time']}")

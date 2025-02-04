@@ -221,7 +221,6 @@ class TabTreeview(QWidget):
           self.tab_contents[computer_id].tabTreeview_btn_img.checkStatusRun(True)
         elif button_name =="ON":
           self.tab_contents[computer_id].tabTreeview_btn_img.checkStatusRun(False)
-          schedule.clear(tag='chkStatusSchedule')
         else:
           self.tab_contents[computer_id].tabTreeview_btn_img.send_to_command()   
   
