@@ -170,13 +170,16 @@ class TabTreeview_btn(QWidget):
     job=schedule.get_jobs(client_tag)
     new_time = job[0].next_run + timedelta(minutes=schedule_min)
 
-    if self.run_btn_cnt%3==0:
-      self.signal_generator.user_signal_setText_time_for_statusChk.emit(3, f"아이템분해: {new_time.strftime('%H:%M:%S')}")
+    if self.run_btn_cnt==3:
+      self.signal_generator.user_signal_setText_time_for_statusChk.emit(3, new_time.strftime('%H:%M:%S'))
       self.signal_generator.user_signal_send_to_command.emit(button, "아이템분해",1)
       self.run_btn_cnt=0
+    elif self.run_btn_cnt==2:
+      self.signal_generator.user_signal_setText_time_for_statusChk.emit(3, f"아이템분해: {new_time.strftime('%H:%M:%S')}")
+      self.sio.emit('button_schedule', {"status_check_button":[1,1,1,1,1],"character_list":{}}, to=sid)
+      self.signal_generator.user_signal_start_animation.emit(clicked_button, button_name)  #(button_name="OFF")
     else:
       self.signal_generator.user_signal_setText_time_for_statusChk.emit(3, new_time.strftime('%H:%M:%S'))
-      # {"버튼이름":[데이터],"character_list":[{"아이디1":핸들 값1,"아이디2":핸들 값2}]}
       self.sio.emit('button_schedule', {"status_check_button":[1,1,1,1,1],"character_list":{}}, to=sid)
       self.signal_generator.user_signal_start_animation.emit(clicked_button, button_name)  #(button_name="OFF")
 
@@ -207,7 +210,7 @@ class TabTreeview_btn(QWidget):
       # schedule.every(20).seconds.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag(client_tag)
       job=schedule.get_jobs(client_tag)
       self.setText_time_for_statusChk(2,"statusChk time:")
-      self.setText_time_for_statusChk(3,job[0].next_run.strftime('%Y-%m-%d %H:%M:%S'))
+      self.setText_time_for_statusChk(3,job[0].next_run.strftime('%H:%M:%S'))
     else:
       self.run_btn.setText("OFF")
       self.status_check.setText("Status Check:OFF")
