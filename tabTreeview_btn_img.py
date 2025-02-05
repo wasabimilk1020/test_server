@@ -162,10 +162,11 @@ class TabTreeview_btn(QWidget):
     self.header_item.setText(row,message)
     self.header_item.setTextAlignment(row,Qt.AlignHCenter)
 
-  def set_schedule_chkStatus(self, clicked_button, button_name, decomposeItem_button, sid, client_tag, schedule_min):
+  def set_schedule_chkStatus(self, clicked_button, button_name, decomposeItem_button, client_tag, schedule_min):
     self.run_btn_cnt+=1
     self.last_clicked_button[button_name]=clicked_button
     button=decomposeItem_button
+    sid=self.pcList[self.tab_name]
 
     job=schedule.get_jobs(client_tag)
     new_time = job[0].next_run + timedelta(minutes=schedule_min)
@@ -198,7 +199,6 @@ class TabTreeview_btn(QWidget):
       }
     decomposeItem_button = buttons_dict.get("아이템분해")[0] #아이템분해 버튼 객체
 
-    sid=self.pcList[self.tab_name]
     if checked:
       self.run_btn.setText("ON")
       self.status_check.setText("Status Check:ON")
@@ -206,7 +206,7 @@ class TabTreeview_btn(QWidget):
       if tab_index != -1:  # 유효한 인덱스라면
         self.tab_widget.setTabText(tab_index, f"✅ {self.tab_name}")
       schedule.clear(client_tag)
-      schedule.every(schedule_min).minutes.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid, client_tag, schedule_min).tag(client_tag)
+      schedule.every(schedule_min).minutes.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, client_tag, schedule_min).tag(client_tag)
       # schedule.every(20).seconds.do(self.set_schedule_chkStatus, clicked_button, button_name, decomposeItem_button, sid).tag(client_tag)
       job=schedule.get_jobs(client_tag)
       self.setText_time_for_statusChk(2,"statusChk time:")
