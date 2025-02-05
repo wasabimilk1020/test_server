@@ -226,10 +226,11 @@ class TabTreeview(QWidget):
   
   def stop_animation(self,btn_name,computer_id):
     button_name=btn_name
-
+    #가끔 여기서 KeyError: 'status_check_button'
     # 작업 완료 시 애니메이션 중지 및 버튼 복원
-    animation =  self.tab_contents[computer_id].tabTreeview_btn_img.animations.pop(button_name)  # 애니메이션 제거
-    animation.stop()
+    if button_name in self.tab_contents[computer_id].tabTreeview_btn_img.animations:
+      animation =  self.tab_contents[computer_id].tabTreeview_btn_img.animations.pop(button_name)  # 애니메이션 제거
+      animation.stop()
     # print("last_clicked_button: ",self.tab_contents[computer_id].tabTreeview_btn_img.last_clicked_button)
     self.tab_contents[computer_id].tabTreeview_btn_img.last_clicked_button[button_name].setStyleSheet("background-color: none;")
     self.tab_contents[computer_id].tabTreeview_btn_img.last_clicked_button[button_name].setEnabled(True)

@@ -317,24 +317,53 @@ class TabTreeview_btn(QWidget):
     else:
       print("어카운트 접속하지 않음")
       
-    
   #왼쪽 버튼 클릭 시 이벤트 핸들러  
   def send_to_command(self, button=None, title=None, flag=None):
     if flag is not None:
       button_name=title    
     else:
       button_name=self.sender().text()
-    
+    #아래 코드 테스트 해보자.
     if button_name == "재시작":
-      sid=self.pcList[self.tab_name]
-      reply = QMessageBox.question(
-          self, "확인", "컴퓨터를 재시작하시겠습니까?", 
-          QMessageBox.Yes | QMessageBox.No, QMessageBox.No
-      )
+        sid = self.pcList.get(self.tab_name)
+        if not sid:
+            print("에러: 해당 클라이언트의 sid를 찾을 수 없습니다.")
+            return
 
-      if reply == QMessageBox.Yes:
-          self.sio.emit('reboot_computer', {}, to=sid)  # 재시작 실행
-      return
+        # ✅ 부모를 명확히 지정 (현재 활성화된 윈도우)
+        parent_window = QApplication.instance().activeWindow()
+
+        # ✅ 비동기 메시지 박스를 안전하게 실행
+        msg_box = QMessageBox(parent_window)
+        msg_box.setWindowTitle("확인")
+        msg_box.setText("컴퓨터를 재시작하시겠습니까?")
+        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg_box.setDefaultButton(QMessageBox.No)
+
+        # ✅ 메시지 박스가 닫힐 때 후속 동작 실행
+        def on_messagebox_closed(result):
+            if result == QMessageBox.Yes:
+                try:
+                    self.sio.emit('reboot_computer', {}, to=sid)
+                except Exception as e:
+                    print(f"소켓 오류 발생: {e}")  # 네트워크 오류 발생 시 로그 출력
+
+        msg_box.buttonClicked.connect(lambda button: on_messagebox_closed(msg_box.standardButton(button)))
+        msg_box.open()  # ✅ exec_() 대신 open() 사용 (비동기 실행)
+
+    # if button_name == "재시작":
+      # sid=self.pcList[self.tab_name]
+      # if not sid:
+      #   print("에러: 해당 클라이언트의 sid를 찾을 수 없습니다.")
+      #   return
+      # reply = QMessageBox.question(
+      #     self, "확인", "컴퓨터를 재시작하시겠습니까?", 
+      #     QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+      # )
+
+      # if reply == QMessageBox.Yes:
+      #     self.sio.emit('reboot_computer', {}, to=sid)  # 재시작 실행
+      # return
       
     # 그룹 이름과 관련된 버튼 데이터를 매핑
     button_dict_map = {
