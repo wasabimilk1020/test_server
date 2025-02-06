@@ -80,7 +80,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 0
+            "charging": 3
         },
         {
             "name": "아이템분해",
@@ -226,6 +226,14 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "게임실행",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
             "charging": 0
         }
     ]
