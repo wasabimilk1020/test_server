@@ -1,4 +1,2 @@
-dict={"kim":"eunsu"}
-print(dict)
-dict["kim"]="은수"
-print(dict)
+
+# if last_pong_time and time.time() - last_pong_time > PONG_TIMEOUT:

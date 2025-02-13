@@ -170,8 +170,8 @@ class TabTreeview(QWidget):
       header_item.setCheckState(0, Qt.Checked)
       self.tab_contents[PC_id].tree_widget.addTopLevelItem(header_item)
       # 데이터 추가
-      for name in self.name_list:
-        self.tab_contents[PC_id].rowId[name] = QTreeWidgetItem(["", name])
+      for index, name in enumerate(self.name_list):
+        self.tab_contents[PC_id].rowId[name] = QTreeWidgetItem(["", f"{index+1}. {name}"])
         self.tab_contents[PC_id].rowId[name].setFlags(self.tab_contents[PC_id].rowId[name].flags() | Qt.ItemIsUserCheckable)
         self.tab_contents[PC_id].rowId[name].setCheckState(0, Qt.Checked)
         self.tab_contents[PC_id].tree_widget.addTopLevelItem(self.tab_contents[PC_id].rowId[name])
