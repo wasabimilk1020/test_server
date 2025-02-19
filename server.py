@@ -185,7 +185,7 @@ if __name__ == "__main__":
   app = QApplication(sys.argv)
   window = MainWindow()
   # ws_server=WebSocketServer("127.0.0.1", 4000, window)  
-  ws_server=WebSocketServer('192.168.50.113', 5000, window)
+  ws_server=WebSocketServer('192.168.50.29', 5000, window)
 
 
   # 서버 실행 (Greenlet 스레드)

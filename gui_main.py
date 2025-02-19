@@ -10,7 +10,7 @@ from schedule_manager import Scheduler
 class MainWindow(QMainWindow):
   def __init__(self):
     super().__init__()
-    self.setWindowTitle("QTabWidget Example")
+    self.setWindowTitle("Lineage2M")
     self.setGeometry(1920, 800, 960, 1080)
     self.cleanup=None
     Scheduler()  #스케쥴러 실행
