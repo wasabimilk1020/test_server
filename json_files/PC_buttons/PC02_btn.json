@@ -80,7 +80,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 4
+            "charging": 3
         },
         {
             "name": "아이템분해",
@@ -145,6 +145,14 @@
             "xRange": 40,
             "yRange": 40,
             "charging": 0
+        },
+        {
+            "name": "제작",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 2
         }
     ],
     "세팅": [

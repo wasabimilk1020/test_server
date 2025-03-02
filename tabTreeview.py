@@ -58,8 +58,8 @@ class Tab(QWidget):
         
          # 컬럼별 폭 수동 설정
         self.tree_widget.header().setSectionResizeMode(0, QHeaderView.Fixed)  # 첫 번째 컬럼 고정
-        self.tree_widget.header().resizeSection(0, 50)  # 첫 번째 컬럼 폭: 50px
-        self.tree_widget.header().resizeSection(1, 100)  # 두 번째 컬럼 폭: 100px
+        self.tree_widget.header().resizeSection(0, 45)  # 첫 번째 컬럼 폭: 50px
+        self.tree_widget.header().resizeSection(1, 140)  # 두 번째 컬럼 폭: 100px
         self.tree_widget.header().resizeSection(2, 150)  # 세 번째 컬럼 폭: 150px
         self.tree_widget.header().resizeSection(3, 200)  # 네 번째 컬럼 폭: 200px
         self.tree_widget.header().resizeSection(4, 75)  # 다섯 번째 컬럼 폭: 75px
@@ -156,7 +156,7 @@ class TabTreeview(QWidget):
     # character_list={"아이디":핸들 값}
     character_list=load_json(f"./json_files/character_list/{PC_id}.json", PC_id)
     self.name_list=character_list.keys()
-
+    
     # 기존 rowId 데이터를 모두 제거
     self.tab_contents[PC_id].rowId.clear()
     self.tab_contents[PC_id].tree_widget.clear()  
@@ -237,9 +237,10 @@ class TabTreeview(QWidget):
 
   #---이미지 섹션
   # def image_layout(self, character_name, time, image_path, gif_path): #일단 gif는 보류
-  def image_layout(self, character_name, time, image_path, computer_id):
+  def image_layout(self, _character_name, time, image_path, computer_id):
     # 수직 레이아웃 생성
     image_vertical_box = QVBoxLayout()
+    character_name = _character_name.split(maxsplit=1)[1]
 
     if character_name in self.image_widgets:
       self.image_widgets[character_name][0].setText(character_name)

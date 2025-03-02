@@ -89,7 +89,7 @@ class WebSocketServer:
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     self.sio.emit('pong', {"time": f"{current_time}"}, to=sid)
   
-  #set up 버튼으로 캐릭터리스트를 갱신함
+  #Set Account 버튼으로 캐릭터리스트를 갱신함
   def revAccount(self, sid, data):
     character_list=data  #{"아이디":핸들 값...}
     computer_id=self.get_computer_id(sid)
@@ -127,7 +127,6 @@ class WebSocketServer:
     current_time=data[1]
     img=data[2]
     computer_id=self.get_computer_id(sid)
-
     image_data = base64.b64decode(img)
     # 파일로 저장
     with open(f"./image_files/{id}.png", "wb") as f:

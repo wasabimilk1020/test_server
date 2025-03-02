@@ -44,16 +44,48 @@
             "name": "안타라스",
             "x": 1141,
             "y": 0,
-            "xRange": 0,
-            "yRange": 0,
+            "xRange": 10,
+            "yRange": 10,
             "charging": 0
         },
         {
             "name": "이벤트던전",
             "x": 1141,
             "y": 0,
-            "xRange": 0,
-            "yRange": 0,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "봉인사원",
+            "x": 1145,
+            "y": 310,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "카이트해적",
+            "x": 1145,
+            "y": 310,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "네뷸라이트",
+            "x": 1145,
+            "y": 310,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "회색제단",
+            "x": 1145,
+            "y": 310,
+            "xRange": 10,
+            "yRange": 10,
             "charging": 0
         }
     ],
@@ -80,7 +112,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 4
+            "charging": 3
         },
         {
             "name": "아이템분해",
@@ -145,6 +177,14 @@
             "xRange": 40,
             "yRange": 40,
             "charging": 0
+        },
+        {
+            "name": "제작",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 2
         }
     ],
     "세팅": [
