@@ -58,11 +58,11 @@ class Tab(QWidget):
         
          # 컬럼별 폭 수동 설정
         self.tree_widget.header().setSectionResizeMode(0, QHeaderView.Fixed)  # 첫 번째 컬럼 고정
-        self.tree_widget.header().resizeSection(0, 45)  # 첫 번째 컬럼 폭: 50px
-        self.tree_widget.header().resizeSection(1, 140)  # 두 번째 컬럼 폭: 100px
-        self.tree_widget.header().resizeSection(2, 150)  # 세 번째 컬럼 폭: 150px
-        self.tree_widget.header().resizeSection(3, 200)  # 네 번째 컬럼 폭: 200px
-        self.tree_widget.header().resizeSection(4, 75)  # 다섯 번째 컬럼 폭: 75px
+        self.tree_widget.header().resizeSection(0, 45)  # 첫 번째 컬럼 폭
+        self.tree_widget.header().resizeSection(1, 155)  # 두 번째 컬럼 폭
+        self.tree_widget.header().resizeSection(2, 140)  # 세 번째 컬럼 폭
+        self.tree_widget.header().resizeSection(3, 200)  # 네 번째 컬럼 폭
+        self.tree_widget.header().resizeSection(4, 75)  # 다섯 번째 컬럼 폭
 
         # 합산 결과 표시 라벨
         self.sum_label = QLabel("다이아 합계: 0")
