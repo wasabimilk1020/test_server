@@ -1,0 +1,304 @@
+{
+    "던전": [
+        {
+            "name": "사냥",
+            "x": 1142,
+            "y": 375,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "격전의섬",
+            "x": 1142,
+            "y": 313,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "파괴된성채",
+            "x": 1142,
+            "y": 313,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "크루마탑",
+            "x": 1141,
+            "y": 443,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "상아탑",
+            "x": 1141,
+            "y": 21,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "안타라스",
+            "x": 1141,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 0
+        },
+        {
+            "name": "이벤트던전",
+            "x": 1141,
+            "y": 313,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "봉인사원",
+            "x": 1145,
+            "y": 313,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "카이트해적",
+            "x": 1145,
+            "y": 313,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "네뷸라이트",
+            "x": 1145,
+            "y": 313,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "회색제단",
+            "x": 1145,
+            "y": 313,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        }
+    ],
+    "루틴": [
+        {
+            "name": "모닝",
+            "x": 33,
+            "y": 10,
+            "xRange": 30,
+            "yRange": 30,
+            "charging": 0
+        },
+        {
+            "name": "우편",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "시즌패스",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 4
+        },
+        {
+            "name": "아이템분해",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "스킬북분해",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "아이템삭제",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "일괄사용",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "사망체크",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "이벤트상점",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "아가시온",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "신탁서",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "제작",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 2
+        }
+    ],
+    "세팅": [
+        {
+            "name": "모두",
+            "x": 100,
+            "y": 200,
+            "xRange": 80,
+            "yRange": 80,
+            "charging": 0
+        },
+        {
+            "name": "고급",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "희귀",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "40M",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "제한없음",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "바람",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "불",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "물",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "재시작",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "다이아",
+            "x": 15,
+            "y": 25,
+            "xRange": 40,
+            "yRange": 40,
+            "charging": 0
+        },
+        {
+            "name": "게임실행",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 0
+        },
+        {
+            "name": "파티해제",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 0
+        },
+        {
+            "name": "귀환",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 0
+        },
+        {
+            "name": "파던입장",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 0
+        }
+    ]
+}
