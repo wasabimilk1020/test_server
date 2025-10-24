@@ -11,31 +11,23 @@
         {
             "name": "격전의섬",
             "x": 1142,
-            "y": 313,
+            "y": 375,
             "xRange": 10,
             "yRange": 10,
-            "charging": 0
+            "charging": 1
         },
         {
             "name": "파괴된성채",
             "x": 1142,
-            "y": 313,
+            "y": 375,
             "xRange": 10,
             "yRange": 10,
-            "charging": 0
+            "charging": 1
         },
         {
             "name": "크루마탑",
             "x": 1141,
-            "y": 443,
-            "xRange": 10,
-            "yRange": 10,
-            "charging": 0
-        },
-        {
-            "name": "상아탑",
-            "x": 1141,
-            "y": 21,
+            "y": 505,
             "xRange": 10,
             "yRange": 10,
             "charging": 0
@@ -51,7 +43,7 @@
         {
             "name": "이벤트던전",
             "x": 1141,
-            "y": 313,
+            "y": 375,
             "xRange": 10,
             "yRange": 10,
             "charging": 0
@@ -59,7 +51,7 @@
         {
             "name": "봉인사원",
             "x": 1145,
-            "y": 313,
+            "y": 378,
             "xRange": 10,
             "yRange": 10,
             "charging": 0
@@ -67,7 +59,7 @@
         {
             "name": "카이트해적",
             "x": 1145,
-            "y": 313,
+            "y": 378,
             "xRange": 10,
             "yRange": 10,
             "charging": 0
@@ -75,7 +67,7 @@
         {
             "name": "네뷸라이트",
             "x": 1145,
-            "y": 313,
+            "y": 378,
             "xRange": 10,
             "yRange": 10,
             "charging": 0
@@ -83,7 +75,23 @@
         {
             "name": "회색제단",
             "x": 1145,
-            "y": 313,
+            "y": 378,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "최후정원",
+            "x": 1145,
+            "y": 378,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "케트라",
+            "x": 1145,
+            "y": 378,
             "xRange": 10,
             "yRange": 10,
             "charging": 0
@@ -112,7 +120,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 4
+            "charging": 3
         },
         {
             "name": "아이템분해",
@@ -185,6 +193,30 @@
             "xRange": 0,
             "yRange": 0,
             "charging": 2
+        },
+        {
+            "name": "클래스합성",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 15
+        },
+        {
+            "name": "아가합성",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 15
+        },
+        {
+            "name": "아인하사",
+            "x": 10,
+            "y": 10,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
         }
     ],
     "세팅": [

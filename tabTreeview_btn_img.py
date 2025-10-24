@@ -159,6 +159,10 @@ class TabTreeview_btn(QWidget):
     # print("버튼클래스 row id 세팅: ",self.rowId)
 
   def setText_time_for_statusChk(self,row,message):
+    if self.header_item is None:
+      print("header_item이 None입니다. setText 실행 불가")
+      return
+
     self.header_item.setText(row,message)
     self.header_item.setTextAlignment(row,Qt.AlignHCenter)
 

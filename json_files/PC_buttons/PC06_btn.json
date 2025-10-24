@@ -34,11 +34,11 @@
         },
         {
             "name": "상아탑",
-            "x": 1141,
-            "y": 21,
+            "x": 665,
+            "y": 585,
             "xRange": 10,
             "yRange": 10,
-            "charging": 0
+            "charging": 1
         },
         {
             "name": "안타라스",
@@ -51,7 +51,7 @@
         {
             "name": "이벤트던전",
             "x": 1141,
-            "y": 378,
+            "y": 375,
             "xRange": 10,
             "yRange": 10,
             "charging": 0
@@ -87,6 +87,22 @@
             "xRange": 10,
             "yRange": 10,
             "charging": 0
+        },
+        {
+            "name": "최후정원",
+            "x": 1145,
+            "y": 378,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
+        },
+        {
+            "name": "케트라",
+            "x": 1145,
+            "y": 378,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
         }
     ],
     "루틴": [
@@ -112,7 +128,7 @@
             "y": 25,
             "xRange": 40,
             "yRange": 40,
-            "charging": 4
+            "charging": 3
         },
         {
             "name": "아이템분해",
@@ -185,6 +201,30 @@
             "xRange": 0,
             "yRange": 0,
             "charging": 2
+        },
+        {
+            "name": "클래스합성",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 15
+        },
+        {
+            "name": "아가합성",
+            "x": 0,
+            "y": 0,
+            "xRange": 0,
+            "yRange": 0,
+            "charging": 15
+        },
+        {
+            "name": "아인하사",
+            "x": 10,
+            "y": 10,
+            "xRange": 10,
+            "yRange": 10,
+            "charging": 0
         }
     ],
     "세팅": [
