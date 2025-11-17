@@ -5,6 +5,7 @@ from tabTreeview_btn_img import TabTreeview_btn
 from json_editor import JsonEditor
 import json
 import schedule
+import re
 
 def load_json(json_file, PC_id):
   """JSON 파일 로드."""
@@ -237,35 +238,70 @@ class TabTreeview(QWidget):
 
   #---이미지 섹션
   # def image_layout(self, character_name, time, image_path, gif_path): #일단 gif는 보류
+  # def image_layout(self, _character_name, time, image_path, computer_id):
+  #   # 수직 레이아웃 생성
+  #   image_vertical_box = QVBoxLayout()
+  #   character_name = _character_name.split(maxsplit=1)[1]
+
+  #   if character_name in self.image_widgets:
+  #     self.image_widgets[character_name][0].setText(character_name)
+  #     self.image_widgets[character_name][1].setText(time)
+  #     self.image_widgets[character_name][2].set_pixmap()
+  #   else: 
+  #     self.image_widgets[character_name]=[]
+  #     # 캐릭터 이름 QLabel
+  #     name_label = QLabel(character_name)      
+  #     image_vertical_box.addWidget(name_label)
+  #     self.image_widgets[character_name].append(name_label)
+
+  #     # 시간 QLabel
+  #     time_label = QLabel(time)
+  #     image_vertical_box.addWidget(time_label)
+  #     self.image_widgets[character_name].append(time_label)
+
+  #     # 이미지 뷰어
+  #     image_viewer = ImageViewer(image_path)
+  #     image_viewer.set_pixmap()
+  #     image_vertical_box.addWidget(image_viewer)
+  #     self.image_widgets[character_name].append(image_viewer)
+  #     self.tab_contents[computer_id].tabTreeview_btn_img.image_main_layout.addLayout(image_vertical_box)
+   
   def image_layout(self, _character_name, time, image_path, computer_id):
     # 수직 레이아웃 생성
     image_vertical_box = QVBoxLayout()
-    character_name = _character_name.split(maxsplit=1)[1]
+
+    # 앞부분 "리니지2M l " 같은 패턴을 제거 (없어도 그대로 반환 → 안전)
+    character_name = re.sub(r"^리니지2M\s*l\s*", "", _character_name).strip()
+
+    # 혹시나 완전 빈 문자열이면 원본 그대로 사용
+    if not character_name:
+        character_name = _character_name
 
     if character_name in self.image_widgets:
-      self.image_widgets[character_name][0].setText(character_name)
-      self.image_widgets[character_name][1].setText(time)
-      self.image_widgets[character_name][2].set_pixmap()
-    else: 
-      self.image_widgets[character_name]=[]
-      # 캐릭터 이름 QLabel
-      name_label = QLabel(character_name)      
-      image_vertical_box.addWidget(name_label)
-      self.image_widgets[character_name].append(name_label)
+        self.image_widgets[character_name][0].setText(character_name)
+        self.image_widgets[character_name][1].setText(time)
+        self.image_widgets[character_name][2].set_pixmap()
+    else:
+        self.image_widgets[character_name] = []
 
-      # 시간 QLabel
-      time_label = QLabel(time)
-      image_vertical_box.addWidget(time_label)
-      self.image_widgets[character_name].append(time_label)
+        # 캐릭터 이름 QLabel
+        name_label = QLabel(character_name)
+        image_vertical_box.addWidget(name_label)
+        self.image_widgets[character_name].append(name_label)
 
-      # 이미지 뷰어
-      image_viewer = ImageViewer(image_path)
-      image_viewer.set_pixmap()
-      image_vertical_box.addWidget(image_viewer)
-      self.image_widgets[character_name].append(image_viewer)
-      self.tab_contents[computer_id].tabTreeview_btn_img.image_main_layout.addLayout(image_vertical_box)
-   
-  
+        # 시간 QLabel
+        time_label = QLabel(time)
+        image_vertical_box.addWidget(time_label)
+        self.image_widgets[character_name].append(time_label)
+
+        # 이미지 뷰어
+        image_viewer = ImageViewer(image_path)
+        image_viewer.set_pixmap()
+        image_vertical_box.addWidget(image_viewer)
+        self.image_widgets[character_name].append(image_viewer)
+
+        self.tab_contents[computer_id].tabTreeview_btn_img.image_main_layout.addLayout(image_vertical_box)
+
   def diamond_update_sum(self, data, computer_id, name):
     """다이아 컬럼의 숫자 합계 업데이트"""
     diamond=data
