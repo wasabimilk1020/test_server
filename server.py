@@ -171,7 +171,7 @@ class WebSocketServer:
       except Exception as e:
             print(f"Cleanup 중 예외 발생: {e}")
 
-  def runServer(self, server):  # 서버 실행
+  def runServer(self, server):  # 서버 실행을 위한 함수
     try:
       print("서버 실행")
       server.serve_forever()  # 서버 실행
@@ -186,7 +186,7 @@ if __name__ == "__main__":
   ws_server=WebSocketServer('192.168.50.29', 5000, window)
 
 
-  # 서버 실행 (Greenlet 스레드)
+  # 서버 실행 (Greenlet 스레드:gevent wsgi에 있는 스레드)
   ws_server.greenlet = spawn(ws_server.runServer, ws_server.server)  
 
   window.setup_server(ws_server.cleanup) 

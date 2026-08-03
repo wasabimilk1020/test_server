@@ -38,7 +38,7 @@
             "y": 675,
             "xRange": 10,
             "yRange": 10,
-            "charging": 1
+            "charging": 2
         },
         {
             "name": "안타라스",
@@ -50,8 +50,8 @@
         },
         {
             "name": "이벤트던전",
-            "x": 1047,
-            "y": 650,
+            "x": 1045,
+            "y": 655,
             "xRange": 10,
             "yRange": 10,
             "charging": 0
