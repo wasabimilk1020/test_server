@@ -45,7 +45,8 @@ class JsonEditor(QWidget):
         except json.JSONDecodeError:
           print(f"{self.tab_name} JSON 파일의 형식이 잘못됨")
           return
-        tab_data = {}  # 빈 데이터로 초기화
+        self.create_table(self.tab_name, tab_data)
+
 
     def create_table(self, tab_name, tab_data):
         """JSON 데이터를 기반으로 탭 생성."""
