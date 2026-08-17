@@ -179,11 +179,20 @@ class WebSocketServer:
         print(f"Server error: {e}")
     finally:
       self.cleanup()  # Gevent Lock을 사용해 안전하게 Cleanup
-    
+
+# class GuiHandler:
+#   def __init__(self, window):
+#     self.window = window
+
+#   def handle_cleanup(self):
+#     if self.window.ws_server:
+#       self.window.ws_server.cleanup()
 if __name__ == "__main__":
   app = QApplication(sys.argv)
   window = MainWindow()
   ws_server=WebSocketServer('192.168.50.29', 5000, window)
+  #웹 소켓 connet에서 발생하는 tab_tree_view를 위해 window를 ws_server에 전달
+  #즉, gui변경이 웹 소켓에서 발생해야되는 상황.
 
 
   # 서버 실행 (Greenlet 스레드:gevent wsgi에 있는 스레드)
@@ -201,6 +210,6 @@ if __name__ == "__main__":
 
 
 
-#run 만들면된다
-#statusCheck 스케쥴이 짧을 때 다른 버튼과 겹쳐서 statusChk가 두 번 이상 쌓이면 start가 stop보다 먼지 일어나면서
-#같은 key로 뒤에 하나는 덮어씌워진다.즉, 객체가 2개라야 하는대 1개이고 첫 번째 실행만 마치면 객체는 비어 있게 되서 두 번째 실행 때 오류남
+#1. gui와 서버를 확실히 분리하자
+#2. 나머지는 어떻게 할 지 생각해보자.
+#3. open_json utils에 만들어 주자

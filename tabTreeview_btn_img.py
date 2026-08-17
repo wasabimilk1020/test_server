@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt,QVariantAnimation, QTimer,QObject,pyqtSignal
 import schedule
 import  time
 from datetime import timedelta
+import utils
 
 class SignalGenerator(QObject):
   user_signal_send_to_command= pyqtSignal(object,object,object)
@@ -48,13 +49,13 @@ class GifViewer(QLabel):
     self.setFixedSize(40, 30)
     super().leaveEvent(event)
 
-def load_json(json_file,tab_name):
-  """JSON 파일 로드."""
-  try:
-      with open(json_file, "r", encoding="utf-8") as f:
-          return json.load(f)
-  except (FileNotFoundError, json.JSONDecodeError):
-    print(f"{tab_name} json 파일을 찾을 수 없음")
+# def load_json(json_file,tab_name):
+#   """JSON 파일 로드."""
+#   try:
+#       with open(json_file, "r", encoding="utf-8") as f:
+#           return json.load(f)
+#   except (FileNotFoundError, json.JSONDecodeError):
+#     print(f"{tab_name} json 파일을 찾을 수 없음")
   
 #---이 파일의 메인 클래스
 class TabTreeview_btn(QWidget):
@@ -273,22 +274,25 @@ class TabTreeview_btn(QWidget):
     
   def add_buttons(self):
     try:
-      self.buttonsFromJson = load_json(f"./json_files/PC_buttons/{self.tab_name}_btn.json",self.tab_name)
-      
-      # defaultButton = self.load_buttons(file_path)  # {"그룹이름":[{버튼속성},{버튼속성}]}
-      buttonFromJson=self.buttonsFromJson # {"그룹이름":[{버튼속성},{버튼속성}]}
-      
-      for groupBox_name, buttons in buttonFromJson.items():
-        if groupBox_name == "던전":
-          self.create_button(self.dungeon_grid_layout, self.dungeon_buttons, buttons)
-        elif groupBox_name == "루틴":
-          self.create_button(self.routine_grid_layout, self.routine_buttons, buttons)
-        elif groupBox_name == "세팅":
-          self.create_button(self.setting_grid_layout, self.setting_buttons, buttons)
+      self.buttonsFromJson = utils.load_json(f"./json_files/PC_buttons/{self.tab_name}_btn.json")
     except FileNotFoundError:
-      print(f"Default buttons file is not found.")
+      print(f"{self.tab_name} JSON 파일이 없음")
+      return
     except json.JSONDecodeError:
-      print(f"Error decoding JSON file")
+      print(f"{self.tab_name} JSON 파일의 형식이 잘못됨")
+      return
+      
+    # defaultButton = self.load_buttons(file_path)  # {"그룹이름":[{버튼속성},{버튼속성}]}
+    buttonFromJson=self.buttonsFromJson # {"그룹이름":[{버튼속성},{버튼속성}]}
+    
+    for groupBox_name, buttons in buttonFromJson.items():
+      if groupBox_name == "던전":
+        self.create_button(self.dungeon_grid_layout, self.dungeon_buttons, buttons)
+      elif groupBox_name == "루틴":
+        self.create_button(self.routine_grid_layout, self.routine_buttons, buttons)
+      elif groupBox_name == "세팅":
+        self.create_button(self.setting_grid_layout, self.setting_buttons, buttons)
+    
   
   def generate_button_data(self, button_name,button_dict_map):
     emit_data={}

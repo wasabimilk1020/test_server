@@ -6,14 +6,15 @@ from json_editor import JsonEditor
 import json
 import schedule
 import re
+import utils
 
-def load_json(json_file, PC_id):
-  """JSON 파일 로드."""
-  try:
-      with open(json_file, "r", encoding="utf-8") as f:
-          return json.load(f)
-  except (FileNotFoundError, json.JSONDecodeError):
-      print(f"{PC_id} json 파일을 찾을 수 없음")
+# def load_json(json_file, PC_id):
+#   """JSON 파일 로드."""
+#   try:
+#       with open(json_file, "r", encoding="utf-8") as f:
+#           return json.load(f)
+#   except (FileNotFoundError, json.JSONDecodeError):
+#       print(f"{PC_id} json 파일을 찾을 수 없음")
 
 class ImageViewer(QLabel):
   def __init__(self, image_path):
@@ -36,70 +37,63 @@ class ImageViewer(QLabel):
 
 # 탭 클래스
 class Tab(QWidget):
-    def __init__(self,tab_name, tab_container, tab_contents,show_context_menu):
-        super().__init__()
-        self.tab_name = tab_name  # 탭 이름 설정
-        self.tab_container = tab_container
-        self.sio = None
-        self.rowId={} #{"아이디":rowId}
-        self.tab_contents=tab_contents
-        self.show_context_menu=show_context_menu
-       
-        # 레이아웃 설정
-        self.tab_layout = QHBoxLayout()
-        self.left_tab_layout = QVBoxLayout()
-        self.right_tab_layout = QVBoxLayout()
-
-        # QTreeWidget 생성
-        self.tree_widget = QTreeWidget()
-        self.tree_widget.setColumnCount(5)
-        self.tree_widget.setHeaderLabels(["", "Name", "Status", "Log", "다이아"])
-        self.tree_widget.setAlternatingRowColors(True)
-        self.left_tab_layout.addWidget(self.tree_widget)
-        
-         # 컬럼별 폭 수동 설정
-        self.tree_widget.header().setSectionResizeMode(0, QHeaderView.Fixed)  # 첫 번째 컬럼 고정
-        self.tree_widget.header().resizeSection(0, 45)  # 첫 번째 컬럼 폭
-        self.tree_widget.header().resizeSection(1, 155)  # 두 번째 컬럼 폭
-        self.tree_widget.header().resizeSection(2, 140)  # 세 번째 컬럼 폭
-        self.tree_widget.header().resizeSection(3, 200)  # 네 번째 컬럼 폭
-        self.tree_widget.header().resizeSection(4, 75)  # 다섯 번째 컬럼 폭
-
-        # 합산 결과 표시 라벨
-        self.sum_label = QLabel("다이아 합계: 0")
-        self.sum_label.setAlignment(Qt.AlignRight)
-        self.left_tab_layout.addWidget(self.sum_label)
-
-        # 버튼 및 이미지 레이아웃
-        self.tabTreeview_btn_img = TabTreeview_btn(self.tab_name, self.tab_container, self.tab_contents, self.show_context_menu)
-        self.json_editor = JsonEditor(self.tab_name, self.tab_container, self.tabTreeview_btn_img)
-
-        self.left_tab_layout.addWidget(self.tabTreeview_btn_img)
-        self.right_tab_layout.addWidget(self.json_editor)
-        self.tab_layout.addLayout(self.left_tab_layout)
-        self.tab_layout.addLayout(self.right_tab_layout)
-
-        # 체크박스 상태 변경 이벤트 연결
-        self.tree_widget.itemChanged.connect(self.on_check_allOrnot)
-
-        # #이미지 테스트용 데이터
-        # for i in range(10):
-        #   # self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png", "test_gif.gif")  #git포함
-        #   self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png")  
-
-          
-        self.setLayout(self.tab_layout)
-
-    def on_check_allOrnot(self, item, column):
-      if column == 0:  # 체크박스 열만 처리
-        total_items = self.tree_widget.topLevelItemCount()
-        
-        # 첫 번째 행 체크박스 상태 변경 시 전체 항목 체크/해제
-        if item == self.tree_widget.topLevelItem(0):
-          state = item.checkState(0)
-          for i in range(1, total_items):
-            child_item = self.tree_widget.topLevelItem(i)
-            child_item.setCheckState(0, state)
+  def __init__(self,tab_name, tab_container, tab_contents,show_context_menu):
+    super().__init__()
+    self.tab_name = tab_name  # 탭 이름 설정
+    self.tab_container = tab_container
+    self.sio = None
+    self.rowId={} #{"아이디":rowId}
+    self.tab_contents=tab_contents
+    self.show_context_menu=show_context_menu
+    
+    # 레이아웃 설정
+    self.tab_layout = QHBoxLayout()
+    self.left_tab_layout = QVBoxLayout()
+    self.right_tab_layout = QVBoxLayout()
+    # QTreeWidget 생성
+    self.tree_widget = QTreeWidget()
+    self.tree_widget.setColumnCount(5)
+    self.tree_widget.setHeaderLabels(["", "Name", "Status", "Log", "다이아"])
+    self.tree_widget.setAlternatingRowColors(True)
+    self.left_tab_layout.addWidget(self.tree_widget)
+    
+     # 컬럼별 폭 수동 설정
+    self.tree_widget.header().setSectionResizeMode(0, QHeaderView.Fixed)  # 첫 번째 컬럼 고정
+    self.tree_widget.header().resizeSection(0, 45)  # 첫 번째 컬럼 폭
+    self.tree_widget.header().resizeSection(1, 155)  # 두 번째 컬럼 폭
+    self.tree_widget.header().resizeSection(2, 140)  # 세 번째 컬럼 폭
+    self.tree_widget.header().resizeSection(3, 200)  # 네 번째 컬럼 폭
+    self.tree_widget.header().resizeSection(4, 75)  # 다섯 번째 컬럼 폭
+    # 합산 결과 표시 라벨
+    self.sum_label = QLabel("다이아 합계: 0")
+    self.sum_label.setAlignment(Qt.AlignRight)
+    self.left_tab_layout.addWidget(self.sum_label)
+    
+    # 버튼 및 이미지 레이아웃
+    self.tabTreeview_btn_img = TabTreeview_btn(self.tab_name, self.tab_container, self.tab_contents, self.show_context_menu)
+    self.json_editor = JsonEditor(self.tab_name, self.tab_container, self.tabTreeview_btn_img)
+    self.left_tab_layout.addWidget(self.tabTreeview_btn_img)
+    self.right_tab_layout.addWidget(self.json_editor)
+    self.tab_layout.addLayout(self.left_tab_layout)
+    self.tab_layout.addLayout(self.right_tab_layout)
+    # 체크박스 상태 변경 이벤트 연결
+    self.tree_widget.itemChanged.connect(self.on_check_allOrnot)
+    # #이미지 테스트용 데이터
+    # for i in range(10):
+    #   # self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png", "test_gif.gif")  #git포함
+    #   self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png")  
+      
+    self.setLayout(self.tab_layout)
+  def on_check_allOrnot(self, item, column):
+    if column == 0:  # 체크박스 열만 처리
+      total_items = self.tree_widget.topLevelItemCount()
+      
+      # 첫 번째 행 체크박스 상태 변경 시 전체 항목 체크/해제
+      if item == self.tree_widget.topLevelItem(0):
+        state = item.checkState(0)
+        for i in range(1, total_items):
+          child_item = self.tree_widget.topLevelItem(i)
+          child_item.setCheckState(0, state)
 
   
 class TabTreeview(QWidget):
@@ -155,7 +149,15 @@ class TabTreeview(QWidget):
 
   def populate_data(self, PC_id):
     # character_list={"아이디":핸들 값}
-    character_list=load_json(f"./json_files/character_list/{PC_id}.json", PC_id)
+    try:
+      character_list=utils.load_json(f"./json_files/character_list/{PC_id}.json")
+    except FileNotFoundError:
+      print(f"{PC_id} JSON 파일이 없음")
+      return
+    except json.JSONDecodeError:
+      print(f"{PC_id} JSON 파일의 형식이 잘못됨")
+      return
+
     self.name_list=character_list.keys()
     
     # 기존 rowId 데이터를 모두 제거

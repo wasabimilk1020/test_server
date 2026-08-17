@@ -13,21 +13,20 @@ class MainWindow(QMainWindow):
     self.setWindowTitle("Lineage2M")
     self.setGeometry(1920, 800, 960, 1080)
     self.cleanup=None
-    Scheduler()  #스케쥴러 실행
-    
-    # --- 메인 left, right 레이아웃 ---
-    self.main_top_layout = QVBoxLayout()  # 메인의 왼쪽 레이아웃
-    self.main_bottom_layout = QHBoxLayout()  # 메인의 오른쪽 레이아웃
+    Scheduler()  #스케쥴러 실행 (이건 또 왜 여기서 호출할까??)
 
-#---Account, Log, and json 위젯과 레이아웃
+#---main_vbox top 
+    #Account, Log, and json 위젯과 레이아웃
     self.main_top_groupBox = QGroupBox("Account and Log")
     self.main_top_widget_layout=QVBoxLayout()
     self.tab_tree_view = TabTreeview()  
     self.main_top_widget_layout.addWidget(self.tab_tree_view)
     self.main_top_groupBox.setLayout(self.main_top_widget_layout)
-    self.main_top_layout.addWidget(self.main_top_groupBox)
 
-#---스케쥴 테이블 위젯과 레이아웃
+#---main_vbox bottom 
+    self.main_bottom_hbox = QHBoxLayout()  # 메인 아래 레이아웃
+
+    # 스케쥴 테이블 위젯과 레이아웃
     self.main_bottom_left_groupBox = QGroupBox("Schedule")
     self.main_bottom_left_groupBox.setMaximumHeight(290)
     self.schedule_layout = QVBoxLayout()
@@ -38,28 +37,28 @@ class MainWindow(QMainWindow):
     self.schedule_set_btn.clicked.connect(schedule_table.schedule_table_time_set)
     self.schedule_layout.addWidget(self.schedule_set_btn, alignment=Qt.AlignCenter)
     self.main_bottom_left_groupBox.setLayout(self.schedule_layout)
-    self.main_bottom_layout.addWidget(self.main_bottom_left_groupBox)
+    self.main_bottom_hbox.addWidget(self.main_bottom_left_groupBox)
 
-#---이미지 전송
+    #이미지 전송
     self.main_bottom_right_groupBox = QGroupBox("Image Transfer")
     self.send_to_image = ImageAttachApp()
     self.send_to_image_layout = QHBoxLayout()
     self.send_to_image_layout.addWidget(self.send_to_image)
     self.main_bottom_right_groupBox.setLayout(self.send_to_image_layout)
-    self.main_bottom_layout.addWidget(self.main_bottom_right_groupBox)
+    self.main_bottom_hbox.addWidget(self.main_bottom_right_groupBox)
     
-#---메인 레이아웃 세팅
+#---main_vbox 세팅
     self.main_widget = QWidget()
-    self.main_layout = QVBoxLayout()
-    self.main_layout.addLayout(self.main_top_layout)
-    self.main_layout.addLayout(self.main_bottom_layout)
-    self.main_widget.setLayout(self.main_layout)
+    self.main_vbox = QVBoxLayout()
+    self.main_vbox.addWidget(self.main_top_groupBox)
+    self.main_vbox.addLayout(self.main_bottom_hbox)
+    self.main_widget.setLayout(self.main_vbox)
     self.setCentralWidget(self.main_widget)
 
   def setup_server(self, cleanup):
     self.cleanup=cleanup
     
-  def closeEvent(self, event):
+  def closeEvent(self, event):  # Qt event handlers
     reply = QMessageBox.question(
       self, '확인', '서버가 실행 중입니다. 종료하시겠습니까?',
       QMessageBox.Yes | QMessageBox.No, QMessageBox.No

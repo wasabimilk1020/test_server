@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout, QLabel, QGroupBox
 )
 from PyQt5.QtCore import pyqtSlot
+import utils
 
 class JsonEditor(QWidget):
     def __init__(self, tab_name, tab_widget, tab_treeview_btn):
@@ -27,17 +28,24 @@ class JsonEditor(QWidget):
         # # 탭 변경 시그널 연결
         # self.tab_widget.currentChanged.connect(self.on_tab_changed)  # 탭 변경 이벤트 연결
 
-    def load_json(self, json_file):
-        """JSON 파일 로드."""
-        try:
-            with open(json_file, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            return {}  # 파일이 없거나 잘못된 JSON이면 빈 데이터 반환
+    # def load_json(self, json_file):
+    #     """JSON 파일 로드."""
+    #     try:
+    #         with open(json_file, "r", encoding="utf-8") as f:
+    #             return json.load(f)
+    #     except (FileNotFoundError, json.JSONDecodeError):
+    #         return {}  # 파일이 없거나 잘못된 JSON이면 빈 데이터 반환
 
     def setup_tabs(self):        
-        tab_data = self.load_json(self.json_file)
-        self.create_table(self.tab_name, tab_data)
+        try:
+          tab_data = utils.load_json(self.json_file)
+        except FileNotFoundError:
+          print(f"{self.tab_name} JSON 파일이 없음")
+          return
+        except json.JSONDecodeError:
+          print(f"{self.tab_name} JSON 파일의 형식이 잘못됨")
+          return
+        tab_data = {}  # 빈 데이터로 초기화
 
     def create_table(self, tab_name, tab_data):
         """JSON 데이터를 기반으로 탭 생성."""
