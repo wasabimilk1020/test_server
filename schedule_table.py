@@ -71,7 +71,7 @@ class ScheduleTable(QWidget):
             schedule.every().day.at(scheduled_time).do(self.set_schedule_with_button, header_title).tag('routine')
             break
     
-  def schedule_table_time_set(self): 
+  def set_time(self): 
     print("스케줄 설정 버튼 클릭됨")
     schedule.clear(tag='routine')
     min=[]

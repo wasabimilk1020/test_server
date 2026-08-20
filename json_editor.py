@@ -28,14 +28,6 @@ class JsonEditor(QWidget):
         # # 탭 변경 시그널 연결
         # self.tab_widget.currentChanged.connect(self.on_tab_changed)  # 탭 변경 이벤트 연결
 
-    # def load_json(self, json_file):
-    #     """JSON 파일 로드."""
-    #     try:
-    #         with open(json_file, "r", encoding="utf-8") as f:
-    #             return json.load(f)
-    #     except (FileNotFoundError, json.JSONDecodeError):
-    #         return {}  # 파일이 없거나 잘못된 JSON이면 빈 데이터 반환
-
     def setup_tabs(self):        
         try:
           tab_data = utils.load_json(self.json_file)
@@ -142,8 +134,14 @@ class JsonEditor(QWidget):
                     "charging": int(table.item(row, 5).text()) if table.item(row, 5) else 0,
                 }
                 data_to_save[category].append(item)
-        with open(json_file, "w", encoding="utf-8") as f:
-            json.dump(data_to_save, f, indent=4, ensure_ascii=False)
+        try:
+          utils.write_json(json_file, data_to_save)
+        except FileNotFoundError:
+          print(f"{self.tab_name} JSON 파일이 없음")
+          return
+        
+        # with open(json_file, "w", encoding="utf-8") as f:
+        #     json.dump(data_to_save, f, indent=4, ensure_ascii=False)
         print(f"JSON file for tab {self.tab_name} saved successfully!")
         
         self.save_button.setStyleSheet("background-color: green;")

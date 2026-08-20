@@ -1,8 +1,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QGroupBox, QWidget,QPushButton,QMessageBox
 from PyQt5.QtCore import Qt,QTimer
-from tabTreeview import TabTreeview
-from schedule_table import ScheduleTable
+import tab
+import schedule_table
 from send_to_image import ImageAttachApp
 from json_editor import JsonEditor
 from schedule_manager import Scheduler
@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
     #Account, Log, and json 위젯과 레이아웃
     self.main_top_groupBox = QGroupBox("Account and Log")
     self.main_top_widget_layout=QVBoxLayout()
-    self.tab_tree_view = TabTreeview()  
+    self.tab_tree_view = tab.Tab(tab_count=10)
     self.main_top_widget_layout.addWidget(self.tab_tree_view)
     self.main_top_groupBox.setLayout(self.main_top_widget_layout)
 
@@ -30,11 +30,11 @@ class MainWindow(QMainWindow):
     self.main_bottom_left_groupBox = QGroupBox("Schedule")
     self.main_bottom_left_groupBox.setMaximumHeight(290)
     self.schedule_layout = QVBoxLayout()
-    schedule_table=ScheduleTable(self.tab_tree_view)
-    self.schedule_layout.addWidget(schedule_table)
+    self.schedule_table=schedule_table.ScheduleTable(self.tab_tree_view)
+    self.schedule_layout.addWidget(self.schedule_table)
     self.schedule_set_btn = QPushButton("스케줄 설정")
     self.schedule_set_btn.setFixedWidth(100)
-    self.schedule_set_btn.clicked.connect(schedule_table.schedule_table_time_set)
+    self.schedule_set_btn.clicked.connect(self.schedule_table.set_time)
     self.schedule_layout.addWidget(self.schedule_set_btn, alignment=Qt.AlignCenter)
     self.main_bottom_left_groupBox.setLayout(self.schedule_layout)
     self.main_bottom_hbox.addWidget(self.main_bottom_left_groupBox)

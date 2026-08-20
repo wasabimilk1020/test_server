@@ -8,14 +8,6 @@ import schedule
 import re
 import utils
 
-# def load_json(json_file, PC_id):
-#   """JSON 파일 로드."""
-#   try:
-#       with open(json_file, "r", encoding="utf-8") as f:
-#           return json.load(f)
-#   except (FileNotFoundError, json.JSONDecodeError):
-#       print(f"{PC_id} json 파일을 찾을 수 없음")
-
 class ImageViewer(QLabel):
   def __init__(self, image_path):
     super().__init__()
@@ -36,7 +28,7 @@ class ImageViewer(QLabel):
     super().leaveEvent(event)
 
 # 탭 클래스
-class Tab(QWidget):
+class TabContents(QWidget):
   def __init__(self,tab_name, tab_container, tab_contents,show_context_menu):
     super().__init__()
     self.tab_name = tab_name  # 탭 이름 설정
@@ -57,7 +49,7 @@ class Tab(QWidget):
     self.tree_widget.setAlternatingRowColors(True)
     self.left_tab_layout.addWidget(self.tree_widget)
     
-     # 컬럼별 폭 수동 설정
+    # 컬럼별 폭 수동 설정
     self.tree_widget.header().setSectionResizeMode(0, QHeaderView.Fixed)  # 첫 번째 컬럼 고정
     self.tree_widget.header().resizeSection(0, 45)  # 첫 번째 컬럼 폭
     self.tree_widget.header().resizeSection(1, 155)  # 두 번째 컬럼 폭
@@ -96,8 +88,8 @@ class Tab(QWidget):
           child_item.setCheckState(0, state)
 
   
-class TabTreeview(QWidget):
-  def __init__(self):
+class Tab(QWidget): #Tab과 TabContents를 분리해야되나 굳이? Tab클래스 내에서 다 하면 안되나?
+  def __init__(self, tab_count):
     super().__init__()
     self.tab_container = QTabWidget()
     self.tab_layout = QVBoxLayout()
@@ -107,7 +99,7 @@ class TabTreeview(QWidget):
     
     # --- 탭 추가 ---
     self.tab_contents = {}  # 탭 객체 딕트 {"PC01":탭 객체}
-    self.add_tabs(self.tab_container)
+    self.create_tabs(tab_count, self.tab_container)
     self.tab_layout.addWidget(self.tab_container)
     self.setLayout(self.tab_layout)
     self.image_widgets={}
@@ -117,10 +109,10 @@ class TabTreeview(QWidget):
     # self.character_list=character_list
     # self.tab_contents[PC_id].tabTreeview_btn_img.setup_character_list(character_list)  #버튼 클래스 초기화
 
-  def add_tabs(self, tab_container):
-    for i in range(1, 11):
+  def create_tabs(self, tab_count, tab_container):  
+    for i in range(1, tab_count + 1):
       tab_name = f"PC{i:02d}"
-      tab = Tab(tab_name, tab_container, self.tab_contents, self.show_context_menu)
+      tab = TabContents(tab_name, tab_container, self.tab_contents, self.show_context_menu)
       tab_container.addTab(tab, QIcon("./emoji/red_circle.png"), tab_name)
       self.tab_contents[tab_name] = tab
   
