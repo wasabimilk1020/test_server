@@ -16,8 +16,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 
 class SignalGenerator(QObject):
-  user_signal_log = pyqtSignal(object, object, object, object, object)
-  user_signal_treeview_populate = pyqtSignal(object)
+  log = pyqtSignal(object, object, object, object, object)
+  set_account = pyqtSignal(object)
   user_signal_client_status_label = pyqtSignal(object,object)
   user_signal_stop_animation = pyqtSignal(object,object)
   user_signal_captured_img = pyqtSignal(object,object,object,object)
@@ -26,7 +26,7 @@ class SignalGenerator(QObject):
 
 
 class WebSocketServer:
-  def __init__(self, host='127.0.0.1', port=4000, window=None):
+  def __init__(self, host='127.0.0.1', port=4000, main_window=None):
     self.host=host
     self.port=port
     self.sio = Server(async_mode='gevent')
@@ -36,15 +36,15 @@ class WebSocketServer:
     self.cleanup_done=False #정리 작업을 위한 플래그
     self.cleanup_lock=lock.Semaphore()
     self.greenlet=None  #greenlet 저장용
-    self.window=window
+    self.main_window=main_window
     self.signal_generator = SignalGenerator()  # SignalGenerator를 속성으로 생성 
-    self.signal_generator.user_signal_treeview_populate.connect(window.tab_tree_view.populate_data)
-    self.signal_generator.user_signal_log.connect(window.tab_tree_view.addLog)
-    self.signal_generator.user_signal_client_status_label.connect(window.tab_tree_view.client_status_label)
-    self.signal_generator.user_signal_stop_animation.connect(window.tab_tree_view.stop_animation)
-    self.signal_generator.user_signal_captured_img.connect(window.tab_tree_view.image_layout)
-    self.signal_generator.user_signal_diamond.connect(window.tab_tree_view.diamond_update_sum)
-    # self.signal_generator.user_signal_statusChk.connect(window.tab_tree_view.diamond_update_sum)
+    self.signal_generator.set_account.connect(main_window.tab.set_account)
+    self.signal_generator.log.connect(main_window.tab.addLog)
+    self.signal_generator.user_signal_client_status_label.connect(main_window.tab.client_status_label)
+    self.signal_generator.user_signal_stop_animation.connect(main_window.tab.stop_animation)
+    self.signal_generator.user_signal_captured_img.connect(main_window.tab.image_layout)
+    self.signal_generator.user_signal_diamond.connect(main_window.tab.diamond_update_sum)
+    # self.signal_generator.user_signal_statusChk.connect(main_window.tab.diamond_update_sum)
 
 
     # 이벤트 핸들러 등록
@@ -63,10 +63,10 @@ class WebSocketServer:
     computer_id = query_params["computer_id"][0]  # "PC01"
     self.pcList[computer_id] = sid  #클라이언트 리스트 생성
 
-    self.signal_generator.user_signal_treeview_populate.emit(computer_id)  #어카운트 세팅
+    self.signal_generator.set_account.emit(computer_id)  #어카운트 세팅
     self.signal_generator.user_signal_client_status_label.emit("Client Status:ON",computer_id)
-    window.tab_tree_view.tab_contents[computer_id].tabTreeview_btn_img.setup_data(self.pcList, self.sio)  #버튼 클래스 pcList setup
-    window.send_to_image.setup_data(self.sio)
+    main_window.tab.tab_contents[computer_id].tabTreeview_btn_img.setup_data(self.pcList, self.sio)  #버튼 클래스 pcList setup
+    main_window.send_to_image.setup_data(self.sio)
    
     print(f"connect {computer_id} 클라이언트", sid)
 
@@ -99,7 +99,7 @@ class WebSocketServer:
         json.dump(character_list, json_file, indent=4, ensure_ascii=False)
         json_file.flush()  # OS 버퍼에 있는 내용을 즉시 디스크에 반영
         os.fsync(json_file.fileno())  # 디스크 기록 완료 보장
-      self.signal_generator.user_signal_treeview_populate.emit(computer_id)
+      self.signal_generator.set_account.emit(computer_id)
     except Exception as e:
       print(f"Error saving JSON file for {computer_id}: {e}")  
 
@@ -115,7 +115,7 @@ class WebSocketServer:
     #현재 시간
     now = datetime.datetime.now()
     nowDatetime=now.strftime('%Y-%m-%d %H:%M')
-    self.signal_generator.user_signal_log.emit(log_message,character_name, nowDatetime, flag, computer_id)
+    self.signal_generator.log.emit(log_message,character_name, nowDatetime, flag, computer_id)
 
   def stop_animation(self, sid, btn_name):
     button_name=btn_name
@@ -181,25 +181,25 @@ class WebSocketServer:
       self.cleanup()  # Gevent Lock을 사용해 안전하게 Cleanup
 
 # class GuiHandler:
-#   def __init__(self, window):
-#     self.window = window
+#   def __init__(self, main_window):
+#     self.main_window = main_window
 
 #   def handle_cleanup(self):
-#     if self.window.ws_server:
-#       self.window.ws_server.cleanup()
+#     if self.main_window.ws_server:
+#       self.main_window.ws_server.cleanup()
 if __name__ == "__main__":
   app = QApplication(sys.argv)
-  window = MainWindow()
-  ws_server=WebSocketServer('192.168.50.29', 5000, window)
-  #웹 소켓 connet에서 발생하는 tab_tree_view를 위해 window를 ws_server에 전달
+  main_window = MainWindow()
+  ws_server=WebSocketServer('192.168.50.29', 5000, main_window)
+  #웹 소켓 connet에서 발생하는 tab를 위해 main_window를 ws_server에 전달
   #즉, gui변경이 웹 소켓에서 발생해야되는 상황.
 
 
   # 서버 실행 (Greenlet 스레드:gevent wsgi에 있는 스레드)
   ws_server.greenlet = spawn(ws_server.runServer, ws_server.server)  
 
-  window.setup_server(ws_server.cleanup) 
-  window.show()
+  main_window.setup_server(ws_server.cleanup) 
+  main_window.show()
 
   # PyQt 타이머로 gevent 이벤트 루프 실행
   timer = QTimer()
@@ -209,7 +209,10 @@ if __name__ == "__main__":
   sys.exit(app.exec_())
 
 
-
+#--구조
+#
+#--해결해야 할 것들
 #1. gui와 서버를 확실히 분리하자
 #2. 나머지는 어떻게 할 지 생각해보자.
 #3. open_json utils에 만들어 주자
+#4. 서버를 최초 가동시 클라이언트 중 연결이 끊긴게 있을때 버튼을 누르면 실행 안되고 팅김.

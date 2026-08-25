@@ -19,8 +19,8 @@ class MainWindow(QMainWindow):
     #Account, Log, and json 위젯과 레이아웃
     self.main_top_groupBox = QGroupBox("Account and Log")
     self.main_top_widget_layout=QVBoxLayout()
-    self.tab_tree_view = tab.Tab(tab_count=10)
-    self.main_top_widget_layout.addWidget(self.tab_tree_view)
+    self.tab = tab.Tab(tab_count=7)
+    self.main_top_widget_layout.addWidget(self.tab)
     self.main_top_groupBox.setLayout(self.main_top_widget_layout)
 
 #---main_vbox bottom 
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
     self.main_bottom_left_groupBox = QGroupBox("Schedule")
     self.main_bottom_left_groupBox.setMaximumHeight(290)
     self.schedule_layout = QVBoxLayout()
-    self.schedule_table=schedule_table.ScheduleTable(self.tab_tree_view)
+    self.schedule_table=schedule_table.ScheduleTable(self.tab)
     self.schedule_layout.addWidget(self.schedule_table)
     self.schedule_set_btn = QPushButton("스케줄 설정")
     self.schedule_set_btn.setFixedWidth(100)

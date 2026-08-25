@@ -35,19 +35,14 @@ class TabContents(QWidget):
     self.tab_container = tab_container
     self.sio = None
     self.rowId={} #{"아이디":rowId}
-    self.tab_contents=tab_contents
+    self.tab_contents=tab_contents  #TabTreeview_btn클래스에서 필요 한건데 실질적으로 index가 필요한거라 index를 넘겨주게 만들자
     self.show_context_menu=show_context_menu
     
-    # 레이아웃 설정
-    self.tab_layout = QHBoxLayout()
-    self.left_tab_layout = QVBoxLayout()
-    self.right_tab_layout = QVBoxLayout()
-    # QTreeWidget 생성
+  # QTreeWidget 생성
     self.tree_widget = QTreeWidget()
     self.tree_widget.setColumnCount(5)
     self.tree_widget.setHeaderLabels(["", "Name", "Status", "Log", "다이아"])
     self.tree_widget.setAlternatingRowColors(True)
-    self.left_tab_layout.addWidget(self.tree_widget)
     
     # 컬럼별 폭 수동 설정
     self.tree_widget.header().setSectionResizeMode(0, QHeaderView.Fixed)  # 첫 번째 컬럼 고정
@@ -56,26 +51,35 @@ class TabContents(QWidget):
     self.tree_widget.header().resizeSection(2, 140)  # 세 번째 컬럼 폭
     self.tree_widget.header().resizeSection(3, 200)  # 네 번째 컬럼 폭
     self.tree_widget.header().resizeSection(4, 75)  # 다섯 번째 컬럼 폭
-    # 합산 결과 표시 라벨
-    self.sum_label = QLabel("다이아 합계: 0")
-    self.sum_label.setAlignment(Qt.AlignRight)
-    self.left_tab_layout.addWidget(self.sum_label)
-    
-    # 버튼 및 이미지 레이아웃
-    self.tabTreeview_btn_img = TabTreeview_btn(self.tab_name, self.tab_container, self.tab_contents, self.show_context_menu)
-    self.json_editor = JsonEditor(self.tab_name, self.tab_container, self.tabTreeview_btn_img)
-    self.left_tab_layout.addWidget(self.tabTreeview_btn_img)
-    self.right_tab_layout.addWidget(self.json_editor)
-    self.tab_layout.addLayout(self.left_tab_layout)
-    self.tab_layout.addLayout(self.right_tab_layout)
     # 체크박스 상태 변경 이벤트 연결
     self.tree_widget.itemChanged.connect(self.on_check_allOrnot)
+
+  # 합산 결과 표시 라벨
+    self.sum_label = QLabel("다이아 합계: 0")
+    self.sum_label.setAlignment(Qt.AlignRight)
+    
+  # 버튼 및 이미지 레이아웃
+    self.tabTreeview_btn_img = TabTreeview_btn(self.tab_name, self.tab_container, self.tab_contents, self.show_context_menu)
+    self.json_editor = JsonEditor(self.tab_name, self.tab_container, self.tabTreeview_btn_img)
+
+  # 레이아웃 설정
+    #탭 영역은 왼쪽 트리뷰+버튼과 오른쪽 json_editor로 나뉘어짐
+    self.tab_layout = QHBoxLayout()
+    self.left_tab_layout = QVBoxLayout()  #트리뷰, sum_label, 버튼(안에 이미지 레이아웃)
+    self.left_tab_layout.addWidget(self.tree_widget)
+    self.left_tab_layout.addWidget(self.sum_label)
+    self.left_tab_layout.addWidget(self.tabTreeview_btn_img)
+    #이 레프트 탭 레이아웃도 어떤 클래스로 감싸서 하나의 위젯으로 만들 수 있을 것 같은데...
+    self.tab_layout.addLayout(self.left_tab_layout)
+    self.tab_layout.addWidget(self.json_editor)
+
     # #이미지 테스트용 데이터
     # for i in range(10):
     #   # self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png", "test_gif.gif")  #git포함
     #   self.tabTreeview_btn_img.image_layout("이해의시계", "00:00", "test.png")  
       
     self.setLayout(self.tab_layout)
+
   def on_check_allOrnot(self, item, column):
     if column == 0:  # 체크박스 열만 처리
       total_items = self.tree_widget.topLevelItemCount()
@@ -116,15 +120,17 @@ class Tab(QWidget): #Tab과 TabContents를 분리해야되나 굳이? Tab클래�
       tab_container.addTab(tab, QIcon("./emoji/red_circle.png"), tab_name)
       self.tab_contents[tab_name] = tab
   
-  def addLog(self, log, id, time, flag, PC_id):
-    # print("addLog row id: ", self.tab_contents[PC_id].rowId)
-
+  def addLog(self, log, name, time, flag, PC_id):
+    if PC_id not in self.tab_contents:
+      print(f"없는 PC_id: {PC_id}")
+      return
+    #self.tab_contents[PC_id].rowId[name] 이 부분이 반복되니까 변수 담아서 처리하자 
     #플래그가 0이면 에러 1이면 상태 메세지로 처리하자
     if flag==0:
-      if(id in self.tab_contents[PC_id].rowId):  
-        self.tab_contents[PC_id].rowId[id].setText(3,"O")
-        self.tab_contents[PC_id].rowId[id].setTextAlignment(2,Qt.AlignHCenter)
-        self.tab_contents[PC_id].rowId[id].addChild(QTreeWidgetItem(self.tab_contents[PC_id].rowId[id],["","",time,log]))  
+      if(name in self.tab_contents[PC_id].rowId):  
+        self.tab_contents[PC_id].rowId[name].setText(3,"O")
+        self.tab_contents[PC_id].rowId[name].setTextAlignment(2,Qt.AlignHCenter)
+        self.tab_contents[PC_id].rowId[name].addChild(QTreeWidgetItem(self.tab_contents[PC_id].rowId[name],["","",time,log]))  
         # 특정 탭 이름만 빨간색으로 변경
         tab_index = self.tab_container.indexOf(self.tab_contents[PC_id])  # 현재 탭의 인덱스 가져오기
         if tab_index != -1:  # 유효한 인덱스라면
@@ -132,14 +138,14 @@ class Tab(QWidget): #Tab과 TabContents를 분리해야되나 굳이? Tab클래�
       else:
         print("없는 아이디")
     elif flag==1:
-      if(id in self.tab_contents[PC_id].rowId):  
-        self.tab_contents[PC_id].rowId[id].setText(2,time)
-        self.tab_contents[PC_id].rowId[id].setText(3,log)
-        self.tab_contents[PC_id].rowId[id].setTextAlignment(2,Qt.AlignHCenter)
+      if(name in self.tab_contents[PC_id].rowId):  
+        self.tab_contents[PC_id].rowId[name].setText(2,time)
+        self.tab_contents[PC_id].rowId[name].setText(3,log)
+        self.tab_contents[PC_id].rowId[name].setTextAlignment(2,Qt.AlignHCenter)
       else:
         print("없는 아이디")
 
-  def populate_data(self, PC_id):
+  def set_account(self, PC_id):
     # character_list={"아이디":핸들 값}
     try:
       character_list=utils.load_json(f"./json_files/character_list/{PC_id}.json")
